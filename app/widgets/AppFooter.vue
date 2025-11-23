@@ -4,8 +4,13 @@
             <NuxtLink to="/" class="logo-font">conduit</NuxtLink>
             <span class="attribution">
                 An interactive learning project from
-                <a href="https://thinkster.io">Thinkster</a>. Code &amp; design
-                licensed under MIT.
+                <NuxtLink
+                    external
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    to="https://thinkster.io"
+                    >Thinkster</NuxtLink
+                >. Code &amp; design licensed under MIT.
             </span>
         </div>
     </footer>
