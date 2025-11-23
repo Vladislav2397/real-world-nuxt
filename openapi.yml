@@ -1,692 +1,691 @@
-openapi: '3.0.3'
+openapi: "3.0.3"
 info:
-  title: RealWorld Backend API
-  version: 1.0.0
-  description: |
-    OpenAPI-схема для backend-эндпоинтов RealWorld:
-    https://docs.realworld.show/specifications/backend/endpoints/
-    https://docs.realworld.show/specifications/backend/api-response-format/
+    title: RealWorld Backend API
+    version: 1.0.0
+    description: |
+        OpenAPI-схема для backend-эндпоинтов RealWorld:
+        https://docs.realworld.show/specifications/backend/endpoints/
+        https://docs.realworld.show/specifications/backend/api-response-format/
 
 servers:
-  - url: https://api.realworld.io
-    description: Пример сервера (можно заменить на свой)
+    - url: https://api.realworld.io
+      description: Пример сервера (можно заменить на свой)
 
 components:
-  securitySchemes:
-    TokenAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: |
-        Используется заголовок:
-        Authorization: Token &lt;jwt.token.here&gt;
+    securitySchemes:
+        TokenAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT
+            description: |
+                Используется заголовок:
+                Authorization: Token &lt;jwt.token.here&gt;
 
-  schemas:
-    User:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-        token:
-          type: string
-        username:
-          type: string
-        bio:
-          type: string
-          nullable: true
-        image:
-          type: string
-          format: uri
-          nullable: true
-      required:
-        - email
-        - token
-        - username
+    schemas:
+        User:
+            type: object
+            properties:
+                email:
+                    type: string
+                    format: email
+                token:
+                    type: string
+                username:
+                    type: string
+                bio:
+                    type: string
+                    nullable: true
+                image:
+                    type: string
+                    format: uri
+                    nullable: true
+            required:
+                - email
+                - token
+                - username
 
-    UserRequestBody:
-      type: object
-      properties:
-        user:
-          type: object
-          properties:
-            email:
-              type: string
-              format: email
-            password:
-              type: string
-            username:
-              type: string
-            bio:
-              type: string
-              nullable: true
-            image:
-              type: string
-              format: uri
-              nullable: true
-          required:
-            - email
-            - password
-      required:
-        - user
+        UserRequestBody:
+            type: object
+            properties:
+                user:
+                    type: object
+                    properties:
+                        email:
+                            type: string
+                            format: email
+                        password:
+                            type: string
+                        username:
+                            type: string
+                        bio:
+                            type: string
+                            nullable: true
+                        image:
+                            type: string
+                            format: uri
+                            nullable: true
+                    required:
+                        - email
+                        - password
+            required:
+                - user
 
-    UserUpdateRequestBody:
-      type: object
-      properties:
-        user:
-          type: object
-          properties:
-            email:
-              type: string
-              format: email
-            username:
-              type: string
-            password:
-              type: string
-            bio:
-              type: string
-              nullable: true
-            image:
-              type: string
-              format: uri
-              nullable: true
-      required:
-        - user
+        UserUpdateRequestBody:
+            type: object
+            properties:
+                user:
+                    type: object
+                    properties:
+                        email:
+                            type: string
+                            format: email
+                        username:
+                            type: string
+                        password:
+                            type: string
+                        bio:
+                            type: string
+                            nullable: true
+                        image:
+                            type: string
+                            format: uri
+                            nullable: true
+            required:
+                - user
 
-    UserResponse:
-      type: object
-      properties:
-        user:
-          $ref: '#/components/schemas/User'
-      required:
-        - user
+        UserResponse:
+            type: object
+            properties:
+                user:
+                    $ref: "#/components/schemas/User"
+            required:
+                - user
 
-    Profile:
-      type: object
-      properties:
-        username:
-          type: string
-        bio:
-          type: string
-          nullable: true
-        image:
-          type: string
-          format: uri
-          nullable: true
-        following:
-          type: boolean
-      required:
-        - username
-        - following
+        Profile:
+            type: object
+            properties:
+                username:
+                    type: string
+                bio:
+                    type: string
+                    nullable: true
+                image:
+                    type: string
+                    format: uri
+                    nullable: true
+                following:
+                    type: boolean
+            required:
+                - username
+                - following
 
-    ProfileResponse:
-      type: object
-      properties:
-        profile:
-          $ref: '#/components/schemas/Profile'
-      required:
-        - profile
+        ProfileResponse:
+            type: object
+            properties:
+                profile:
+                    $ref: "#/components/schemas/Profile"
+            required:
+                - profile
 
-    Article:
-      type: object
-      properties:
-        slug:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        body:
-          type: string
-        tagList:
-          type: array
-          items:
-            type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        favorited:
-          type: boolean
-        favoritesCount:
-          type: integer
-        author:
-          $ref: '#/components/schemas/Profile'
-      required:
-        - slug
-        - title
-        - description
-        - body
-        - tagList
-        - createdAt
-        - updatedAt
-        - favorited
-        - favoritesCount
-        - author
+        Article:
+            type: object
+            properties:
+                slug:
+                    type: string
+                title:
+                    type: string
+                description:
+                    type: string
+                body:
+                    type: string
+                tagList:
+                    type: array
+                    items:
+                        type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                favorited:
+                    type: boolean
+                favoritesCount:
+                    type: integer
+                author:
+                    $ref: "#/components/schemas/Profile"
+            required:
+                - slug
+                - title
+                - description
+                - body
+                - tagList
+                - createdAt
+                - updatedAt
+                - favorited
+                - favoritesCount
+                - author
 
-    # Превью статьи для списков (без поля body, см. примечание в спецификации)
-    ArticlePreview:
-      type: object
-      properties:
-        slug:
-          type: string
-        title:
-          type: string
-        description:
-          type: string
-        tagList:
-          type: array
-          items:
-            type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        favorited:
-          type: boolean
-        favoritesCount:
-          type: integer
-        author:
-          $ref: '#/components/schemas/Profile'
-      required:
-        - slug
-        - title
-        - description
-        - tagList
-        - createdAt
-        - updatedAt
-        - favorited
-        - favoritesCount
-        - author
+        # Превью статьи для списков (без поля body, см. примечание в спецификации)
+        ArticlePreview:
+            type: object
+            properties:
+                slug:
+                    type: string
+                title:
+                    type: string
+                description:
+                    type: string
+                tagList:
+                    type: array
+                    items:
+                        type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                favorited:
+                    type: boolean
+                favoritesCount:
+                    type: integer
+                author:
+                    $ref: "#/components/schemas/Profile"
+            required:
+                - slug
+                - title
+                - description
+                - tagList
+                - createdAt
+                - updatedAt
+                - favorited
+                - favoritesCount
+                - author
 
-    ArticleRequestBody:
-      type: object
-      properties:
-        article:
-          type: object
-          properties:
-            title:
-              type: string
-            description:
-              type: string
-            body:
-              type: string
-            tagList:
-              type: array
-              items:
-                type: string
-          required:
-            - title
-            - description
-            - body
-      required:
-        - article
+        ArticleRequestBody:
+            type: object
+            properties:
+                article:
+                    type: object
+                    properties:
+                        title:
+                            type: string
+                        description:
+                            type: string
+                        body:
+                            type: string
+                        tagList:
+                            type: array
+                            items:
+                                type: string
+                    required:
+                        - title
+                        - description
+                        - body
+            required:
+                - article
 
-    ArticleUpdateRequestBody:
-      type: object
-      properties:
-        article:
-          type: object
-          properties:
-            title:
-              type: string
-            description:
-              type: string
-            body:
-              type: string
-            tagList:
-              type: array
-              items:
-                type: string
-      required:
-        - article
+        ArticleUpdateRequestBody:
+            type: object
+            properties:
+                article:
+                    type: object
+                    properties:
+                        title:
+                            type: string
+                        description:
+                            type: string
+                        body:
+                            type: string
+                        tagList:
+                            type: array
+                            items:
+                                type: string
+            required:
+                - article
 
-    ArticleResponse:
-      type: object
-      properties:
-        article:
-          $ref: '#/components/schemas/Article'
-      required:
-        - article
+        ArticleResponse:
+            type: object
+            properties:
+                article:
+                    $ref: "#/components/schemas/Article"
+            required:
+                - article
 
-    ArticlesResponse:
-      type: object
-      description: |
-        Для /api/articles и /api/articles/feed поле body у статей отсутствует
-        (используется ArticlePreview).
-      properties:
-        articles:
-          type: array
-          items:
-            $ref: '#/components/schemas/ArticlePreview'
-        articlesCount:
-          type: integer
-      required:
-        - articles
-        - articlesCount
+        ArticlesResponse:
+            type: object
+            description: |
+                Для /api/articles и /api/articles/feed поле body у статей отсутствует
+                (используется ArticlePreview).
+            properties:
+                articles:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/ArticlePreview"
+                articlesCount:
+                    type: integer
+            required:
+                - articles
+                - articlesCount
 
-    Comment:
-      type: object
-      properties:
-        id:
-          type: integer
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        body:
-          type: string
-        author:
-          $ref: '#/components/schemas/Profile'
-      required:
-        - id
-        - createdAt
-        - updatedAt
-        - body
-        - author
+        Comment:
+            type: object
+            properties:
+                id:
+                    type: integer
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+                body:
+                    type: string
+                author:
+                    $ref: "#/components/schemas/Profile"
+            required:
+                - id
+                - createdAt
+                - updatedAt
+                - body
+                - author
 
-    CommentRequestBody:
-      type: object
-      properties:
-        comment:
-          type: object
-          properties:
-            body:
-              type: string
-          required:
-            - body
-      required:
-        - comment
+        CommentRequestBody:
+            type: object
+            properties:
+                comment:
+                    type: object
+                    properties:
+                        body:
+                            type: string
+                    required:
+                        - body
+            required:
+                - comment
 
-    CommentResponse:
-      type: object
-      properties:
-        comment:
-          $ref: '#/components/schemas/Comment'
-      required:
-        - comment
+        CommentResponse:
+            type: object
+            properties:
+                comment:
+                    $ref: "#/components/schemas/Comment"
+            required:
+                - comment
 
-    CommentsResponse:
-      type: object
-      properties:
-        comments:
-          type: array
-          items:
-            $ref: '#/components/schemas/Comment'
-      required:
-        - comments
+        CommentsResponse:
+            type: object
+            properties:
+                comments:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/Comment"
+            required:
+                - comments
 
-    TagsResponse:
-      type: object
-      properties:
-        tags:
-          type: array
-          items:
-            type: string
-      required:
-        - tags
+        TagsResponse:
+            type: object
+            properties:
+                tags:
+                    type: array
+                    items:
+                        type: string
+            required:
+                - tags
 
 paths:
-  /api/users/login:
-    post:
-      summary: Логин
-      description: Аутентификация пользователя по email и паролю.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequestBody'
-      responses:
-        '200':
-          description: Успешная аутентификация
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
+    /api/users/login:
+        post:
+            summary: Логин
+            description: Аутентификация пользователя по email и паролю.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UserRequestBody"
+            responses:
+                "200":
+                    description: Успешная аутентификация
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserResponse"
 
-  /api/users:
-    post:
-      summary: Регистрация
-      description: Регистрация нового пользователя.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRequestBody'
-      responses:
-        '200':
-          description: Успешная регистрация
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
+    /api/users:
+        post:
+            summary: Регистрация
+            description: Регистрация нового пользователя.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UserRequestBody"
+            responses:
+                "200":
+                    description: Успешная регистрация
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserResponse"
 
-  /api/user:
-    get:
-      summary: Текущий пользователь
-      security:
-        - TokenAuth: []
-      responses:
-        '200':
-          description: Данные текущего пользователя
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
-    put:
-      summary: Обновление пользователя
-      security:
-        - TokenAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserUpdateRequestBody'
-      responses:
-        '200':
-          description: Обновлённые данные пользователя
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserResponse'
+    /api/user:
+        get:
+            summary: Текущий пользователь
+            security:
+                - TokenAuth: []
+            responses:
+                "200":
+                    description: Данные текущего пользователя
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserResponse"
+        put:
+            summary: Обновление пользователя
+            security:
+                - TokenAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UserUpdateRequestBody"
+            responses:
+                "200":
+                    description: Обновлённые данные пользователя
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UserResponse"
 
-  /api/profiles/{username}:
-    get:
-      summary: Получить профиль пользователя
-      parameters:
-        - name: username
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Профиль пользователя
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProfileResponse'
+    /api/profiles/{username}:
+        get:
+            summary: Получить профиль пользователя
+            parameters:
+                - name: username
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Профиль пользователя
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProfileResponse"
 
-  /api/profiles/{username}/follow:
-    post:
-      summary: Подписаться на пользователя
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: username
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Обновлённый профиль
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProfileResponse'
-    delete:
-      summary: Отписаться от пользователя
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: username
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Обновлённый профиль
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProfileResponse'
+    /api/profiles/{username}/follow:
+        post:
+            summary: Подписаться на пользователя
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: username
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Обновлённый профиль
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProfileResponse"
+        delete:
+            summary: Отписаться от пользователя
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: username
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Обновлённый профиль
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ProfileResponse"
 
-  /api/articles:
-    get:
-      summary: Список статей
-      parameters:
-        - name: tag
-          in: query
-          schema:
-            type: string
-          description: Фильтрация по тегу
-        - name: author
-          in: query
-          schema:
-            type: string
-          description: Фильтрация по автору (username)
-        - name: favorited
-          in: query
-          schema:
-            type: string
-          description: Фильтрация по пользователю, который лайкнул
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 20
-        - name: offset
-          in: query
-          schema:
-            type: integer
-            default: 0
-      responses:
-        '200':
-          description: Список статей (без body)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticlesResponse'
-    post:
-      summary: Создать статью
-      security:
-        - TokenAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ArticleRequestBody'
-      responses:
-        '200':
-          description: Созданная статья
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResponse'
+    /api/articles:
+        get:
+            summary: Список статей
+            parameters:
+                - name: tag
+                  in: query
+                  schema:
+                      type: string
+                  description: Фильтрация по тегу
+                - name: author
+                  in: query
+                  schema:
+                      type: string
+                  description: Фильтрация по автору (username)
+                - name: favorited
+                  in: query
+                  schema:
+                      type: string
+                  description: Фильтрация по пользователю, который лайкнул
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 20
+                - name: offset
+                  in: query
+                  schema:
+                      type: integer
+                      default: 0
+            responses:
+                "200":
+                    description: Список статей (без body)
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ArticlesResponse"
+        post:
+            summary: Создать статью
+            security:
+                - TokenAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ArticleRequestBody"
+            responses:
+                "200":
+                    description: Созданная статья
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ArticleResponse"
 
-  /api/articles/feed:
-    get:
-      summary: Лента статей от подписанных авторов
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            default: 20
-        - name: offset
-          in: query
-          schema:
-            type: integer
-            default: 0
-      responses:
-        '200':
-          description: Лента статей (без body)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticlesResponse'
+    /api/articles/feed:
+        get:
+            summary: Лента статей от подписанных авторов
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 20
+                - name: offset
+                  in: query
+                  schema:
+                      type: integer
+                      default: 0
+            responses:
+                "200":
+                    description: Лента статей (без body)
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ArticlesResponse"
 
-  /api/articles/{slug}:
-    get:
-      summary: Получить статью
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Статья
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResponse'
-    put:
-      summary: Обновить статью
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ArticleUpdateRequestBody'
-      responses:
-        '200':
-          description: Обновлённая статья
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResponse'
-    delete:
-      summary: Удалить статью
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '204':
-          description: Статья удалена
+    /api/articles/{slug}:
+        get:
+            summary: Получить статью
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Статья
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ArticleResponse"
+        put:
+            summary: Обновить статью
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ArticleUpdateRequestBody"
+            responses:
+                "200":
+                    description: Обновлённая статья
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ArticleResponse"
+        delete:
+            summary: Удалить статью
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "204":
+                    description: Статья удалена
 
-  /api/articles/{slug}/comments:
-    post:
-      summary: Добавить комментарий к статье
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentRequestBody'
-      responses:
-        '200':
-          description: Созданный комментарий
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CommentResponse'
-    get:
-      summary: Получить комментарии к статье
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Список комментариев
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CommentsResponse'
+    /api/articles/{slug}/comments:
+        post:
+            summary: Добавить комментарий к статье
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CommentRequestBody"
+            responses:
+                "200":
+                    description: Созданный комментарий
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CommentResponse"
+        get:
+            summary: Получить комментарии к статье
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Список комментариев
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CommentsResponse"
 
-  /api/articles/{slug}/comments/{id}:
-    delete:
-      summary: Удалить комментарий
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Комментарий удалён
+    /api/articles/{slug}/comments/{id}:
+        delete:
+            summary: Удалить комментарий
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: integer
+            responses:
+                "204":
+                    description: Комментарий удалён
 
-  /api/articles/{slug}/favorite:
-    post:
-      summary: Добавить статью в избранное
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Статья с обновлёнными полями избранного
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResponse'
-    delete:
-      summary: Удалить статью из избранного
-      security:
-        - TokenAuth: []
-      parameters:
-        - name: slug
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Статья с обновлёнными полями избранного
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArticleResponse'
+    /api/articles/{slug}/favorite:
+        post:
+            summary: Добавить статью в избранное
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Статья с обновлёнными полями избранного
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ArticleResponse"
+        delete:
+            summary: Удалить статью из избранного
+            security:
+                - TokenAuth: []
+            parameters:
+                - name: slug
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Статья с обновлёнными полями избранного
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ArticleResponse"
 
-  /api/tags:
-    get:
-      summary: Получить список тегов
-      responses:
-        '200':
-          description: Список тегов
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TagsResponse'
-
+    /api/tags:
+        get:
+            summary: Получить список тегов
+            responses:
+                "200":
+                    description: Список тегов
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TagsResponse"
