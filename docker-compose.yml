@@ -1,0 +1,7 @@
+version: "3"
+services:
+    real-world-nuxt:
+        build:
+            context: .
+        ports:
+            - "5900:3000"
