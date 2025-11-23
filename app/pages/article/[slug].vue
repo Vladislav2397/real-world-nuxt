@@ -1,32 +1,43 @@
 <template>
-    <div class="article-page">
+    <div v-if="article" class="article-page">
         <div class="banner">
             <div class="container">
-                <h1>How to build webapps that scale</h1>
+                <h1>{{ article.title }}</h1>
 
                 <div class="article-meta">
-                    <a href="/profile/eric-simons"
-                        ><img src="http://i.imgur.com/Qr71crq.jpg"
+                    <a :href="`/profile/${article.author.username}`"
+                        ><img :src="article.author.image"
                     /></a>
                     <div class="info">
-                        <a href="/profile/eric-simons" class="author"
-                            >Eric Simons</a
+                        <a
+                            :href="`/profile/${article.author.username}`"
+                            class="author"
                         >
-                        <span class="date">January 20th</span>
+                            {{ article.author.username }}
+                        </a>
+                        <span class="date">{{ article.createdAt }}</span>
                     </div>
                     <button class="btn btn-sm btn-outline-secondary">
                         <i class="ion-plus-round"></i>
-                        &nbsp; Follow Eric Simons
-                        <span class="counter">(10)</span>
+                        &nbsp; Follow {{ article.author.username }}
+                        <span class="counter"
+                            >({{ article.favoritesCount }})</span
+                        >
                     </button>
                     &nbsp;&nbsp;
                     <button class="btn btn-sm btn-outline-primary">
                         <i class="ion-heart"></i>
-                        &nbsp; Favorite Post <span class="counter">(29)</span>
+                        &nbsp; Favorite Post
+                        <span class="counter"
+                            >({{ article.favoritesCount }})</span
+                        >
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary">
+                    <NuxtLink
+                        to="/editor/{{ article.slug }}"
+                        class="btn btn-sm btn-outline-secondary"
+                    >
                         <i class="ion-edit"></i> Edit Article
-                    </button>
+                    </NuxtLink>
                     <button class="btn btn-sm btn-outline-danger">
                         <i class="ion-trash-a"></i> Delete Article
                     </button>
@@ -37,21 +48,14 @@
         <div class="container page">
             <div class="row article-content">
                 <div class="col-md-12">
-                    <p>
-                        Web development technologies have evolved at an
-                        incredible clip over the past few years.
-                    </p>
-                    <h2 id="introducing-ionic">Introducing RealWorld.</h2>
-                    <p>
-                        It's a great solution for learning how other frameworks
-                        work.
-                    </p>
+                    <div v-html="article.body"></div>
                     <ul class="tag-list">
-                        <li class="tag-default tag-pill tag-outline">
-                            realworld
-                        </li>
-                        <li class="tag-default tag-pill tag-outline">
-                            implementations
+                        <li
+                            v-for="tag in article.tagList"
+                            :key="tag"
+                            class="tag-default tag-pill tag-outline"
+                        >
+                            {{ tag }}
                         </li>
                     </ul>
                 </div>
@@ -61,23 +65,30 @@
 
             <div class="article-actions">
                 <div class="article-meta">
-                    <a href="profile.html"
-                        ><img src="http://i.imgur.com/Qr71crq.jpg"
+                    <a :href="`/profile/${article.author.username}`"
+                        ><img :src="article.author.image"
                     /></a>
                     <div class="info">
-                        <a href="" class="author">Eric Simons</a>
-                        <span class="date">January 20th</span>
+                        <a
+                            :href="`/profile/${article.author.username}`"
+                            class="author"
+                        >
+                            {{ article.author.username }}
+                        </a>
+                        <span class="date">{{ article.createdAt }}</span>
                     </div>
 
                     <button class="btn btn-sm btn-outline-secondary">
                         <i class="ion-plus-round"></i>
-                        &nbsp; Follow Eric Simons
+                        &nbsp; Follow {{ article.author.username }}
                     </button>
                     &nbsp;
                     <button class="btn btn-sm btn-outline-primary">
                         <i class="ion-heart"></i>
                         &nbsp; Favorite Article
-                        <span class="counter">(29)</span>
+                        <span class="counter"
+                            >({{ article.favoritesCount }})</span
+                        >
                     </button>
                     <button class="btn btn-sm btn-outline-secondary">
                         <i class="ion-edit"></i> Edit Article
@@ -109,10 +120,36 @@
                         </div>
                     </form>
 
-                    <Comment />
-                    <Comment />
+                    <Comment
+                        v-for="comment in comments"
+                        :key="comment.id"
+                        :comment="comment"
+                    />
                 </div>
             </div>
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
+import { articleApi } from '~/shared/api/rest/article'
+
+const props = defineProps<{
+    slug: string
+}>()
+
+const { data: articleData, suspense: articleSuspense } = useQuery({
+    queryKey: ['article', props.slug],
+    queryFn: () => articleApi.getBySlug({ slug: props.slug }),
+})
+onServerPrefetch(articleSuspense)
+const article = computed(() => articleData.value?.article ?? null)
+
+const { data: commentsData, suspense: commentsSuspense } = useQuery({
+    queryKey: ['comments', props.slug],
+    queryFn: () => articleApi.getComments({ slug: props.slug }),
+})
+onServerPrefetch(commentsSuspense)
+const comments = computed(() => commentsData.value?.comments ?? null)
+</script>

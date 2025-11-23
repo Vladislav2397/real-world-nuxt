@@ -11,6 +11,7 @@
                         <fieldset>
                             <fieldset class="form-group">
                                 <input
+                                    v-model="dto.title"
                                     type="text"
                                     class="form-control form-control-lg"
                                     placeholder="Article Title"
@@ -18,6 +19,7 @@
                             </fieldset>
                             <fieldset class="form-group">
                                 <input
+                                    v-model="dto.description"
                                     type="text"
                                     class="form-control"
                                     placeholder="What's this article about?"
@@ -25,6 +27,7 @@
                             </fieldset>
                             <fieldset class="form-group">
                                 <textarea
+                                    v-model="dto.body"
                                     class="form-control"
                                     rows="8"
                                     placeholder="Write your article (in markdown)"
@@ -64,23 +67,17 @@
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
+import { articleApi } from '~/shared/api/rest/article'
+
 definePageMeta({
     roles: ['user'],
     middleware: 'auth-guard',
 })
 
-type CreateArticleDto = {
-    title: string
-    description: string
-    body: string
-    tagList: string[]
-}
-const dto = ref<CreateArticleDto>({
-    title: '',
-    description: '',
-    body: '',
-    tagList: [],
-})
+const props = defineProps<{
+    slug: string
+}>()
 
 const newTag = ref('')
 function addTagToList() {
@@ -91,4 +88,38 @@ function addTagToList() {
     dto.value.tagList.push(newTag.value.trim())
     newTag.value = ''
 }
+
+const { data: articleData, suspense: articleSuspense } = useQuery({
+    queryKey: ['article', props.slug],
+    queryFn: () => articleApi.getBySlug({ slug: props.slug }),
+})
+onServerPrefetch(articleSuspense)
+
+type EditArticleDto = {
+    title: string
+    description: string
+    body: string
+    tagList: string[]
+}
+const dto = ref<EditArticleDto>({
+    title: '',
+    description: '',
+    body: '',
+    tagList: [],
+})
+watch(
+    articleData,
+    newVal => {
+        console.log('newVal', newVal)
+        if (newVal) {
+            dto.value.title = newVal.article.title
+            dto.value.description = newVal.article.description
+            dto.value.body = newVal.article.body
+            dto.value.tagList = [...newVal.article.tagList]
+        }
+    },
+    {
+        immediate: true,
+    }
+)
 </script>

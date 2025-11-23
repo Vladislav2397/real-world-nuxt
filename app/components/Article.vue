@@ -1,27 +1,43 @@
 <template>
     <div class="article-preview">
         <div class="article-meta">
-            <a href="/profile/eric-simons">
-                <img src="http://i.imgur.com/Qr71crq.jpg" />
-            </a>
+            <NuxtLink :to="`/profile/${article.author.username}`">
+                <img :src="article.author.image" />
+            </NuxtLink>
             <div class="info">
-                <a href="/profile/eric-simons" class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
+                <NuxtLink
+                    :to="`/profile/${article.author.username}`"
+                    class="author"
+                >
+                    {{ article.author.username }}
+                </NuxtLink>
+                <span class="date">{{ article.createdAt }}</span>
             </div>
             <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
+                <i class="ion-heart"></i> {{ article.favoritesCount }}
             </button>
         </div>
-        <a href="/article/how-to-build-webapps-that-scale" class="preview-link">
-            <h1>How to build webapps that scale</h1>
-            <p>This is the description for the post.</p>
+        <NuxtLink :to="`/article/${article.slug}`" class="preview-link">
+            <h1>{{ article.title }}</h1>
+            <p>{{ article.description }}</p>
             <span>Read more...</span>
             <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">realworld</li>
-                <li class="tag-default tag-pill tag-outline">
-                    implementations
+                <li
+                    v-for="tag in article.tagList"
+                    :key="tag"
+                    class="tag-default tag-pill tag-outline"
+                >
+                    {{ tag }}
                 </li>
             </ul>
-        </a>
+        </NuxtLink>
     </div>
 </template>
+
+<script setup lang="ts">
+import type { Article } from '~/shared/api/contracts/article'
+
+defineProps<{
+    article: Article
+}>()
+</script>

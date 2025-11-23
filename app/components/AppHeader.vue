@@ -1,86 +1,75 @@
 <template>
-  <nav
-    v-if="!isAuthenticated"
-    class="navbar navbar-light"
-  >
-    <div class="container">
-      <a
-        class="navbar-brand"
-        href="/"
-      >conduit</a>
-      <ul class="nav navbar-nav pull-xs-right">
-        <li class="nav-item">
-          <!-- Add "active" class when you're on that page" -->
-          <a
-            class="nav-link active"
-            href="/"
-          >Home</a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            href="/login"
-          >Sign in</a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            href="/register"
-          >Sign up</a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-  <nav
-    v-else
-    class="navbar navbar-light"
-  >
-    <div class="container">
-      <a
-        class="navbar-brand"
-        href="/"
-      >conduit</a>
-      <ul class="nav navbar-nav pull-xs-right">
-        <li class="nav-item">
-          <!-- Add "active" class when you're on that page" -->
-          <a
-            class="nav-link active"
-            href="/"
-          >Home</a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            href="/editor"
-          >
-            <i class="ion-compose"></i>&nbsp;New Article
-          </a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            href="/settings"
-          >
-            <i class="ion-gear-a"></i>&nbsp;Settings
-          </a>
-        </li>
-        <li class="nav-item">
-          <a
-            class="nav-link"
-            href="/profile/eric-simons"
-          >
-            <img
-              src=""
-              class="user-pic"
-            />
-            Eric Simons
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+    <nav v-if="!isAuthenticated" class="navbar navbar-light">
+        <div class="container">
+            <NuxtLink class="navbar-brand" to="/">conduit</NuxtLink>
+            <ul class="nav navbar-nav pull-xs-right">
+                <li class="nav-item">
+                    <!-- Add "active" class when you're on that page" -->
+                    <NuxtLink class="nav-link" active-class="active" to="/"
+                        >Home</NuxtLink
+                    >
+                </li>
+                <li class="nav-item">
+                    <NuxtLink class="nav-link" active-class="active" to="/login"
+                        >Sign in</NuxtLink
+                    >
+                </li>
+                <li class="nav-item">
+                    <NuxtLink
+                        class="nav-link"
+                        active-class="active"
+                        to="/register"
+                    >
+                        Sign up
+                    </NuxtLink>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <nav v-else class="navbar navbar-light">
+        <div class="container">
+            <NuxtLink class="navbar-brand" to="/">conduit</NuxtLink>
+            <ul class="nav navbar-nav pull-xs-right">
+                <li class="nav-item">
+                    <!-- Add "active" class when you're on that page" -->
+                    <NuxtLink class="nav-link" active-class="active" to="/"
+                        >Home</NuxtLink
+                    >
+                </li>
+                <li class="nav-item">
+                    <NuxtLink
+                        class="nav-link"
+                        active-class="active"
+                        to="/editor"
+                    >
+                        <i class="ion-compose"></i>&nbsp;New Article
+                    </NuxtLink>
+                </li>
+                <li class="nav-item">
+                    <NuxtLink
+                        class="nav-link"
+                        active-class="active"
+                        to="/settings"
+                    >
+                        <i class="ion-gear-a"></i>&nbsp;Settings
+                    </NuxtLink>
+                </li>
+                <li class="nav-item">
+                    <NuxtLink
+                        class="nav-link"
+                        active-class="active"
+                        to="/profile/eric-simons"
+                    >
+                        <img src="" class="user-pic" />
+                        Eric Simons
+                    </NuxtLink>
+                </li>
+            </ul>
+        </div>
+    </nav>
 </template>
 
 <script setup lang="ts">
-const isAuthenticated = ref(true)
+const token = useCookie('token', { default: () => '' })
+const isAuthenticated = computed(() => !!token.value)
 </script>
