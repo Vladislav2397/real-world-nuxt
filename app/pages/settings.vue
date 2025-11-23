@@ -64,12 +64,7 @@
                         </fieldset>
                     </form>
                     <hr />
-                    <button
-                        class="btn btn-outline-danger"
-                        @click="handleLogout"
-                    >
-                        Or click here to logout.
-                    </button>
+                    <LogoutButton />
                 </div>
             </div>
         </div>
@@ -77,65 +72,14 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
-import { profileApi } from '~/shared/api/rest/profile'
+import LogoutButton from '~/features/auth/LogoutButton.vue'
+import { useEditSettings } from '~/features/profile/use-edit-settings'
 
 definePageMeta({
     roles: ['user'],
     middleware: 'auth-guard',
 })
 
-const { data: userData, suspense: userSuspense } = useQuery({
-    queryKey: ['user'],
-    queryFn: () => profileApi.getByUsername({ username: 'jake' }),
-})
+const { userSuspense, dto, handleSubmit } = useEditSettings()
 onServerPrefetch(userSuspense)
-const user = computed(() => userData.value?.profile ?? null)
-
-type UpdateUserDto = {
-    image: string
-    username: string
-    bio: string
-    email: string
-    password: string
-}
-const dto = ref<UpdateUserDto>({
-    image: '',
-    username: '',
-    bio: '',
-    email: '',
-    password: '',
-})
-watch(
-    user,
-    newVal => {
-        if (newVal) {
-            dto.value.image = newVal.image
-            dto.value.username = newVal.username
-            dto.value.bio = newVal.bio
-            // dto.value.email = newVal.email
-            // dto.value.password = newVal.password
-        }
-    },
-    {
-        immediate: true,
-    }
-)
-
-function handleSubmit(e: Event) {
-    const formData = new FormData(e.target as HTMLFormElement)
-    const image = formData.get('image') as string
-    const username = formData.get('username') as string
-    const bio = formData.get('bio') as string
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-
-    console.log({ image, username, bio, email, password })
-}
-
-const token = useCookie('token', { default: () => '' })
-function handleLogout() {
-    token.value = ''
-    navigateTo('/login')
-}
 </script>

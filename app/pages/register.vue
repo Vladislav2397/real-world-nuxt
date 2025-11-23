@@ -45,31 +45,12 @@
 </template>
 
 <script setup lang="ts">
-import { useMutation } from '@tanstack/vue-query'
-import { authApi } from '~/shared/api/rest/auth'
+import { useRegister } from '~/features/auth/use-register'
 
 definePageMeta({
     roles: ['guest'],
     middleware: 'auth-guard',
 })
 
-const { mutateAsync: register } = useMutation({
-    mutationKey: ['register'],
-    mutationFn: authApi.register,
-})
-
-const token = useCookie('token', { default: () => '' })
-async function handleSubmit(e: Event) {
-    const formData = new FormData(e.target as HTMLFormElement)
-
-    const username = formData.get('username') as string
-    const email = formData.get('email') as string
-    const password = formData.get('password') as string
-
-    const result = await register({ username, email, password })
-
-    token.value = result.user.token
-
-    navigateTo('/')
-}
+const { handleSubmit } = useRegister()
 </script>

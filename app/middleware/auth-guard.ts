@@ -4,7 +4,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
     const viewerRole = isAuth.value ? 'user' : 'guest'
 
-    const roles = (to.meta.roles as string[] | undefined) ?? ['guest', 'user']
+    const roles = to.meta.roles ?? ['guest', 'user']
 
     console.debug('auth-guard', {
         viewerRole,

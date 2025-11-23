@@ -96,6 +96,104 @@ const getCommentByIdRequest = async (_id: number) => {
     }
 }
 
+const createArticleRequest = async (_data: {
+    title: string
+    description: string
+    body: string
+    tagList: string[]
+}) => {
+    return {
+        article: {
+            slug: 'how-to-train-your-dragon',
+            title: 'How to train your dragon',
+            description: 'Ever wonder how?',
+            body: 'It takes a Jacobian',
+            tagList: ['dragons', 'training'],
+            createdAt: '2016-02-18T03:22:56.637Z',
+            updatedAt: '2016-02-18T03:48:35.824Z',
+            favorited: false,
+            favoritesCount: 0,
+            author: {
+                username: 'jake',
+                bio: 'I work at statefarm',
+                image: 'https://i.stack.imgur.com/xHWG8.jpg',
+                following: false,
+            },
+        },
+    }
+}
+
+const editArticleRequest = async (_data: {
+    title: string
+    description: string
+    body: string
+    tagList: string[]
+}) => {
+    return {
+        article: {
+            slug: 'how-to-train-your-dragon',
+            title: 'How to train your dragon',
+            description: 'Ever wonder how?',
+            body: 'It takes a Jacobian',
+            tagList: ['dragons', 'training'],
+            createdAt: '2016-02-18T03:22:56.637Z',
+            updatedAt: '2016-02-18T03:48:35.824Z',
+            favorited: false,
+            favoritesCount: 0,
+            author: {
+                username: 'jake',
+                bio: 'I work at statefarm',
+                image: 'https://i.stack.imgur.com/xHWG8.jpg',
+                following: false,
+            },
+        },
+    }
+}
+
+const favoriteArticleRequest = async (_data: { slug: string }) => {
+    return {
+        article: {
+            slug: 'how-to-train-your-dragon',
+            title: 'How to train your dragon',
+            description: 'Ever wonder how?',
+            body: 'It takes a Jacobian',
+            tagList: ['dragons', 'training'],
+            createdAt: '2016-02-18T03:22:56.637Z',
+            updatedAt: '2016-02-18T03:48:35.824Z',
+            favorited: true,
+            favoritesCount: 0,
+            author: {
+                username: 'jake',
+                bio: 'I work at statefarm',
+                image: 'https://i.stack.imgur.com/xHWG8.jpg',
+                following: false,
+            },
+        },
+    }
+}
+
+const unfavoriteArticleRequest = async (_data: { slug: string }) => {
+    return {
+        article: {
+            slug: 'how-to-train-your-dragon',
+            title: 'How to train your dragon',
+            description: 'Ever wonder how?',
+            body: 'It takes a Jacobian',
+            tagList: ['dragons', 'training'],
+            createdAt: '2016-02-18T03:22:56.637Z',
+            updatedAt: '2016-02-18T03:48:35.824Z',
+            favorited: false,
+            favoritesCount: 0,
+            author: {
+                username: 'jake',
+                bio: 'I work at statefarm',
+                image: 'https://i.stack.imgur.com/xHWG8.jpg',
+                following: false,
+            },
+        },
+    }
+}
+
 const getTagListRequest = async () => {
     return {
         tags: ['reactjs', 'angularjs'],
@@ -105,6 +203,10 @@ const getTagListRequest = async () => {
 export const articleApi = {
     getList: getArticleListRequest,
     getBySlug: getArticleBySlugRequest,
+    create: createArticleRequest,
+    edit: editArticleRequest,
+    favorite: favoriteArticleRequest,
+    unfavorite: unfavoriteArticleRequest,
     getComments: getCommentListRequest,
     getCommentById: getCommentByIdRequest,
     getTagList: getTagListRequest,

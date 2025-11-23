@@ -25,19 +25,17 @@
                         >
                     </button>
                     &nbsp;&nbsp;
-                    <button class="btn btn-sm btn-outline-primary">
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        @click="toggleFavorite"
+                    >
                         <i class="ion-heart"></i>
                         &nbsp; Favorite Post
                         <span class="counter"
                             >({{ article.favoritesCount }})</span
                         >
                     </button>
-                    <NuxtLink
-                        to="/editor/{{ article.slug }}"
-                        class="btn btn-sm btn-outline-secondary"
-                    >
-                        <i class="ion-edit"></i> Edit Article
-                    </NuxtLink>
+                    <EditArticleButton :article="article" />
                     <button class="btn btn-sm btn-outline-danger">
                         <i class="ion-trash-a"></i> Delete Article
                     </button>
@@ -83,19 +81,18 @@
                         &nbsp; Follow {{ article.author.username }}
                     </button>
                     &nbsp;
-                    <button class="btn btn-sm btn-outline-primary">
+                    <button
+                        class="btn btn-sm btn-outline-primary"
+                        @click="toggleFavorite"
+                    >
                         <i class="ion-heart"></i>
                         &nbsp; Favorite Article
                         <span class="counter"
                             >({{ article.favoritesCount }})</span
                         >
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary">
-                        <i class="ion-edit"></i> Edit Article
-                    </button>
-                    <button class="btn btn-sm btn-outline-danger">
-                        <i class="ion-trash-a"></i> Delete Article
-                    </button>
+                    <EditArticleButton :article="article" />
+                    <DeleteArticleButton :article="article" />
                 </div>
             </div>
 
@@ -133,6 +130,9 @@
 
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
+import DeleteArticleButton from '~/features/article/DeleteArticleButton.vue'
+import EditArticleButton from '~/features/article/EditArticleButton.vue'
+import { useToggleFavorite } from '~/features/article/use-toggle-favorite'
 import { articleApi } from '~/shared/api/rest/article'
 
 const props = defineProps<{
@@ -152,4 +152,6 @@ const { data: commentsData, suspense: commentsSuspense } = useQuery({
 })
 onServerPrefetch(commentsSuspense)
 const comments = computed(() => commentsData.value?.comments ?? null)
+
+const { toggle: toggleFavorite } = useToggleFavorite(article.value)
 </script>

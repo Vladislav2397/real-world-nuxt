@@ -7,7 +7,7 @@
                         <li>That title is required</li>
                     </ul> -->
 
-                    <form>
+                    <form @submit.prevent="handleSubmit">
                         <fieldset>
                             <fieldset class="form-group">
                                 <input
@@ -64,23 +64,14 @@
 </template>
 
 <script setup lang="ts">
+import { useCreateArticle } from '~/features/article/use-create-article'
+
 definePageMeta({
     roles: ['user'],
     middleware: 'auth-guard',
 })
 
-type CreateArticleDto = {
-    title: string
-    description: string
-    body: string
-    tagList: string[]
-}
-const dto = ref<CreateArticleDto>({
-    title: '',
-    description: '',
-    body: '',
-    tagList: [],
-})
+const { dto, handleSubmit } = useCreateArticle()
 
 const newTag = ref('')
 function addTagToList() {
