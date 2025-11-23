@@ -2,22 +2,31 @@
     <div class="card">
         <div class="card-block">
             <p class="card-text">
-                With supporting text below as a natural lead-in to additional
-                content.
+                {{ comment.body }}
             </p>
         </div>
         <div class="card-footer">
-            <a href="/profile/author" class="comment-author">
-                <img
-                    src="http://i.imgur.com/Qr71crq.jpg"
-                    class="comment-author-img"
-                />
-            </a>
-            &nbsp;
-            <a href="/profile/jacob-schmidt" class="comment-author"
-                >Jacob Schmidt</a
+            <NuxtLink
+                :to="`/profile/${comment.author.username}`"
+                class="comment-author"
             >
-            <span class="date-posted">Dec 29th</span>
+                <img :src="comment.author.image" class="comment-author-img" />
+            </NuxtLink>
+            &nbsp;
+            <NuxtLink
+                :to="`/profile/${comment.author.username}`"
+                class="comment-author"
+                >{{ comment.author.username }}</NuxtLink
+            >
+            <span class="date-posted">{{ comment.createdAt }}</span>
         </div>
     </div>
 </template>
+
+<script setup lang="ts">
+import type { Comment } from '~/shared/api/contracts/article'
+
+defineProps<{
+    comment: Comment
+}>()
+</script>

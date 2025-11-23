@@ -7,7 +7,7 @@
                         <li>That title is required</li>
                     </ul> -->
 
-                    <form @submit.prevent="handleSubmit">
+                    <form>
                         <fieldset>
                             <fieldset class="form-group">
                                 <input
@@ -67,7 +67,8 @@
 </template>
 
 <script setup lang="ts">
-import { useEditArticle } from '~/features/article/use-edit-article'
+import { useQuery } from '@tanstack/vue-query'
+import { articleApi } from '~/shared/api/rest/article'
 
 definePageMeta({
     roles: ['user'],
@@ -88,6 +89,37 @@ function addTagToList() {
     newTag.value = ''
 }
 
-const { articleSuspense, dto, handleSubmit } = useEditArticle(props.slug)
+const { data: articleData, suspense: articleSuspense } = useQuery({
+    queryKey: ['article', props.slug],
+    queryFn: () => articleApi.getBySlug({ slug: props.slug }),
+})
 onServerPrefetch(articleSuspense)
+
+type EditArticleDto = {
+    title: string
+    description: string
+    body: string
+    tagList: string[]
+}
+const dto = ref<EditArticleDto>({
+    title: '',
+    description: '',
+    body: '',
+    tagList: [],
+})
+watch(
+    articleData,
+    newVal => {
+        console.log('newVal', newVal)
+        if (newVal) {
+            dto.value.title = newVal.article.title
+            dto.value.description = newVal.article.description
+            dto.value.body = newVal.article.body
+            dto.value.tagList = [...newVal.article.tagList]
+        }
+    },
+    {
+        immediate: true,
+    }
+)
 </script>

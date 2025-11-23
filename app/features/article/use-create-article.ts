@@ -21,22 +21,16 @@ export const useCreateArticle = () => {
         mutationFn: articleApi.create,
     })
 
-    const handleSubmit = async (e: Event) => {
-        const formData = new FormData(e.target as HTMLFormElement)
-        const title = formData.get('title') as string
-        const description = formData.get('description') as string
-        const body = formData.get('body') as string
-        const tagList = formData.get('tagList') as unknown as string[]
-
+    const create = async () => {
         const result = await createArticle({
-            title,
-            description,
-            body,
-            tagList,
+            title: dto.value.title,
+            description: dto.value.description,
+            body: dto.value.body,
+            tagList: dto.value.tagList,
         })
 
-        console.log(result)
+        return result
     }
 
-    return { dto, handleSubmit }
+    return { dto, create }
 }
