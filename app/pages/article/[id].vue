@@ -15,20 +15,20 @@
                         <span class="date">January 20th</span>
                     </div>
                     <button class="btn btn-sm btn-outline-secondary">
-                        <i class="ion-plus-round" />
+                        <i class="ion-plus-round"></i>
                         &nbsp; Follow Eric Simons
                         <span class="counter">(10)</span>
                     </button>
                     &nbsp;&nbsp;
                     <button class="btn btn-sm btn-outline-primary">
-                        <i class="ion-heart" />
+                        <i class="ion-heart"></i>
                         &nbsp; Favorite Post <span class="counter">(29)</span>
                     </button>
                     <button class="btn btn-sm btn-outline-secondary">
-                        <i class="ion-edit" /> Edit Article
+                        <i class="ion-edit"></i> Edit Article
                     </button>
                     <button class="btn btn-sm btn-outline-danger">
-                        <i class="ion-trash-a" /> Delete Article
+                        <i class="ion-trash-a"></i> Delete Article
                     </button>
                 </div>
             </div>
@@ -70,20 +70,20 @@
                     </div>
 
                     <button class="btn btn-sm btn-outline-secondary">
-                        <i class="ion-plus-round" />
+                        <i class="ion-plus-round"></i>
                         &nbsp; Follow Eric Simons
                     </button>
                     &nbsp;
                     <button class="btn btn-sm btn-outline-primary">
-                        <i class="ion-heart" />
+                        <i class="ion-heart"></i>
                         &nbsp; Favorite Article
                         <span class="counter">(29)</span>
                     </button>
                     <button class="btn btn-sm btn-outline-secondary">
-                        <i class="ion-edit" /> Edit Article
+                        <i class="ion-edit"></i> Edit Article
                     </button>
                     <button class="btn btn-sm btn-outline-danger">
-                        <i class="ion-trash-a" /> Delete Article
+                        <i class="ion-trash-a"></i> Delete Article
                     </button>
                 </div>
             </div>
@@ -96,7 +96,7 @@
                                 class="form-control"
                                 placeholder="Write a comment..."
                                 rows="3"
-                            />
+                            ></textarea>
                         </div>
                         <div class="card-footer">
                             <img
@@ -109,56 +109,8 @@
                         </div>
                     </form>
 
-                    <div class="card">
-                        <div class="card-block">
-                            <p class="card-text">
-                                With supporting text below as a natural lead-in
-                                to additional content.
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="/profile/author" class="comment-author">
-                                <img
-                                    src="http://i.imgur.com/Qr71crq.jpg"
-                                    class="comment-author-img"
-                                />
-                            </a>
-                            &nbsp;
-                            <a
-                                href="/profile/jacob-schmidt"
-                                class="comment-author"
-                                >Jacob Schmidt</a
-                            >
-                            <span class="date-posted">Dec 29th</span>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-block">
-                            <p class="card-text">
-                                With supporting text below as a natural lead-in
-                                to additional content.
-                            </p>
-                        </div>
-                        <div class="card-footer">
-                            <a href="/profile/author" class="comment-author">
-                                <img
-                                    src="http://i.imgur.com/Qr71crq.jpg"
-                                    class="comment-author-img"
-                                />
-                            </a>
-                            &nbsp;
-                            <a
-                                href="/profile/jacob-schmidt"
-                                class="comment-author"
-                                >Jacob Schmidt</a
-                            >
-                            <span class="date-posted">Dec 29th</span>
-                            <span class="mod-options">
-                                <i class="ion-trash-a" />
-                            </span>
-                        </div>
-                    </div>
+                    <Comment />
+                    <Comment />
                 </div>
             </div>
         </div>
