@@ -8,33 +8,7 @@
                         <NuxtLink to="/register">Need an account?</NuxtLink>
                     </p>
 
-                    <!-- <ul class="error-messages">
-                        <li>That email is already taken</li>
-                    </ul> -->
-
-                    <form @submit.prevent="handleSubmit">
-                        <fieldset class="form-group">
-                            <input
-                                class="form-control form-control-lg"
-                                name="email"
-                                type="email"
-                                placeholder="Email"
-                            />
-                        </fieldset>
-                        <fieldset class="form-group">
-                            <input
-                                class="form-control form-control-lg"
-                                name="password"
-                                type="password"
-                                minlength="8"
-                                required
-                                placeholder="Password"
-                            />
-                        </fieldset>
-                        <button class="btn btn-lg btn-primary pull-xs-right">
-                            Sign in
-                        </button>
-                    </form>
+                    <LoginForm />
                 </div>
             </div>
         </div>
@@ -42,12 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import { useLogin } from '~/features/auth/use-login'
+import LoginForm from '~/features/auth/LoginForm.vue'
 
 definePageMeta({
     roles: ['guest'],
     middleware: 'auth-guard',
 })
-
-const { handleSubmit } = useLogin()
 </script>
