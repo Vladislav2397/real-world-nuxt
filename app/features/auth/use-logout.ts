@@ -1,10 +1,11 @@
 export const useLogout = () => {
     const token = useCookie('token', { default: () => '' })
 
-    function handleLogout() {
+    async function logout() {
         token.value = ''
-        navigateTo('/')
+
+        return true
     }
 
-    return { handleLogout }
+    return { logout }
 }

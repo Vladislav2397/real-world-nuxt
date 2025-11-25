@@ -28,17 +28,18 @@ export const useLogin = () => {
 
         token.value = result.user.token
 
-        return result
+        return result.user
     }
 
     const errors = computed(() => {
         const value = loginMutation.error.value?.errors
 
         if (!value) return []
-        if (!('email' in value)) return []
-        if (!('password' in value)) return []
 
-        return [...value.email, ...value.password]
+        const email = value.email ?? []
+        const password = value.password ?? []
+
+        return [...email, ...password]
     })
 
     return { login, errors, loginMutation }

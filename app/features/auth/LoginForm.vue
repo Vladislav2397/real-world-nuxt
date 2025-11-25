@@ -29,11 +29,7 @@
 <script setup lang="ts">
 import { useLogin } from './use-login'
 
-const { login, errors, loginMutation } = useLogin()
-
-watch(loginMutation.error, () => {
-    console.log('loginMutation.error', loginMutation.error.value)
-})
+const { login, errors } = useLogin()
 
 async function handleSubmit(e: Event) {
     const formData = new FormData(e.target as HTMLFormElement)

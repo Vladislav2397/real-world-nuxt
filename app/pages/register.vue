@@ -52,5 +52,17 @@ definePageMeta({
     middleware: 'auth-guard',
 })
 
-const { handleSubmit } = useRegister()
+const { register } = useRegister()
+
+async function handleSubmit(e: Event) {
+    const formData = new FormData(e.target as HTMLFormElement)
+
+    const username = formData.get('username') as string
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
+    await register({ username, email, password })
+
+    navigateTo('/')
+}
 </script>

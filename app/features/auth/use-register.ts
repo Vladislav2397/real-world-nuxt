@@ -1,26 +1,32 @@
 import { useMutation } from '@tanstack/vue-query'
-import { authApi } from '~/shared/api/rest/auth'
+import { authApi, type RegisterDto } from '~/shared/api/rest/auth'
 
 export const useRegister = () => {
-    const { mutateAsync: login } = useMutation({
-        mutationKey: ['login'],
-        mutationFn: authApi.login,
+    const registerMutation = useMutation({
+        mutationKey: ['register'],
+        mutationFn: authApi.register,
     })
 
     const token = useCookie('token', { default: () => '' })
 
-    async function handleSubmit(e: Event) {
-        const formData = new FormData(e.target as HTMLFormElement)
-
-        const email = formData.get('email') as string
-        const password = formData.get('password') as string
-
-        const result = await login({ email, password })
+    async function register(data: RegisterDto) {
+        const result = await registerMutation.mutateAsync(data)
 
         token.value = result.user.token
 
-        navigateTo('/')
+        return result.user
     }
 
-    return { handleSubmit }
+    const errors = computed(() => {
+        const value = registerMutation.error.value?.errors
+
+        if (!value) return []
+
+        const email = value.email ?? []
+        const password = value.password ?? []
+
+        return [...email, ...password]
+    })
+
+    return { register, errors }
 }

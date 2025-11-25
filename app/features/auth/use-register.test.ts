@@ -1,8 +1,8 @@
 // @vitest-environment nuxt
 import { describe, expect, it, vi } from 'vitest'
-import { useLogin } from './use-login'
-import { flushPromises } from '@vue/test-utils'
+import { useRegister } from './use-register'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
+import { flushPromises } from '@vue/test-utils'
 import { withNuxtSetup } from '~/shared/lib/test-utils/with-nuxt-setup'
 
 // Create a hoisted mock for useCookie
@@ -26,22 +26,22 @@ mockNuxtImport('useCookie', () => {
     return useCookieMock
 })
 
-const { loginMock } = vi.hoisted(() => {
+const { registerMock } = vi.hoisted(() => {
     // Создаем один объект, который будет возвращаться моком
-    const loginMock = vi.fn()
-    return { loginMock }
+    const registerMock = vi.fn()
+    return { registerMock }
 })
 
 // Mock authApi.login
 vi.mock('~/shared/api/rest/auth', () => ({
     authApi: {
-        login: loginMock,
+        register: registerMock,
     },
 }))
 
-describe('useLogin', () => {
-    it('should login and save token to cookie', async () => {
-        loginMock.mockResolvedValue({
+describe('useRegister', () => {
+    it('should register a user', async () => {
+        registerMock.mockResolvedValue({
             user: {
                 email: 'test@test.com',
                 token: 'jwt.token.here',
@@ -51,12 +51,13 @@ describe('useLogin', () => {
             },
         })
 
-        const { login } = await withNuxtSetup(() => useLogin())
+        const { register } = await withNuxtSetup(() => useRegister())
 
         // Проверяем, что значение в cookie было инициализировано правильно
         expect(cookieRef.value).toBe('')
 
-        const result = await login({
+        const result = await register({
+            username: 'testuser',
             email: 'test@test.com',
             password: 'password',
         })
@@ -77,37 +78,17 @@ describe('useLogin', () => {
     })
 
     it('should return errors if login fails', async () => {
-        loginMock.mockRejectedValue({
-            errors: {
-                email: ['Invalid email or password'],
-            },
-        })
-        const { errors, login } = await withNuxtSetup(() => useLogin())
-
-        try {
-            await login({
-                email: 'test@test.com',
-                password: 'password',
-            })
-        } catch {
-            //
-        }
-        await flushPromises()
-
-        expect(errors.value).toStrictEqual(['Invalid email or password'])
-    })
-
-    it('should return empty errors if login is successful', async () => {
-        loginMock.mockRejectedValue({
+        registerMock.mockRejectedValue({
             errors: {
                 email: ['Invalid email'],
-                password: ['Invalid password'],
+                password: ['Password must be at least 8 characters long'],
             },
         })
-        const { errors, login } = await withNuxtSetup(() => useLogin())
+        const { errors, register } = await withNuxtSetup(() => useRegister())
 
         try {
-            await login({
+            await register({
+                username: 'testuser',
                 email: 'test@test.com',
                 password: 'password',
             })
@@ -118,7 +99,7 @@ describe('useLogin', () => {
 
         expect(errors.value).toStrictEqual([
             'Invalid email',
-            'Invalid password',
+            'Password must be at least 8 characters long',
         ])
     })
 })

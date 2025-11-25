@@ -1,6 +1,10 @@
 import { httpClient } from '../http-client'
 
-const loginRequest = async (data: { email: string; password: string }) => {
+export type LoginDto = {
+    email: string
+    password: string
+}
+const loginRequest = async (data: LoginDto) => {
     const result = await httpClient.post('/api/users/login', data)
 
     return result.data as {
@@ -28,11 +32,12 @@ const loginRequest = async (data: { email: string; password: string }) => {
     // throw new Error('Invalid email or password')
 }
 
-const registerRequest = async (_data: {
+export type RegisterDto = {
     username: string
     email: string
     password: string
-}) => {
+}
+const registerRequest = async (_data: RegisterDto) => {
     return {
         user: {
             email: 'jake@jake.jake',
