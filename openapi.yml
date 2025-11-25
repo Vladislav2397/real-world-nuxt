@@ -1,4 +1,4 @@
-openapi: "3.0.3"
+openapi: '3.0.3'
 info:
     title: RealWorld Backend API
     version: 1.0.0
@@ -97,7 +97,7 @@ components:
             type: object
             properties:
                 user:
-                    $ref: "#/components/schemas/User"
+                    $ref: '#/components/schemas/User'
             required:
                 - user
 
@@ -123,7 +123,7 @@ components:
             type: object
             properties:
                 profile:
-                    $ref: "#/components/schemas/Profile"
+                    $ref: '#/components/schemas/Profile'
             required:
                 - profile
 
@@ -153,7 +153,7 @@ components:
                 favoritesCount:
                     type: integer
                 author:
-                    $ref: "#/components/schemas/Profile"
+                    $ref: '#/components/schemas/Profile'
             required:
                 - slug
                 - title
@@ -191,7 +191,7 @@ components:
                 favoritesCount:
                     type: integer
                 author:
-                    $ref: "#/components/schemas/Profile"
+                    $ref: '#/components/schemas/Profile'
             required:
                 - slug
                 - title
@@ -249,7 +249,7 @@ components:
             type: object
             properties:
                 article:
-                    $ref: "#/components/schemas/Article"
+                    $ref: '#/components/schemas/Article'
             required:
                 - article
 
@@ -262,7 +262,7 @@ components:
                 articles:
                     type: array
                     items:
-                        $ref: "#/components/schemas/ArticlePreview"
+                        $ref: '#/components/schemas/ArticlePreview'
                 articlesCount:
                     type: integer
             required:
@@ -283,7 +283,7 @@ components:
                 body:
                     type: string
                 author:
-                    $ref: "#/components/schemas/Profile"
+                    $ref: '#/components/schemas/Profile'
             required:
                 - id
                 - createdAt
@@ -308,7 +308,7 @@ components:
             type: object
             properties:
                 comment:
-                    $ref: "#/components/schemas/Comment"
+                    $ref: '#/components/schemas/Comment'
             required:
                 - comment
 
@@ -318,7 +318,7 @@ components:
                 comments:
                     type: array
                     items:
-                        $ref: "#/components/schemas/Comment"
+                        $ref: '#/components/schemas/Comment'
             required:
                 - comments
 
@@ -342,14 +342,14 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/UserRequestBody"
+                            $ref: '#/components/schemas/UserRequestBody'
             responses:
-                "200":
+                '200':
                     description: Успешная аутентификация
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/UserResponse"
+                                $ref: '#/components/schemas/UserResponse'
 
     /api/users:
         post:
@@ -360,14 +360,14 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/UserRequestBody"
+                            $ref: '#/components/schemas/UserRequestBody'
             responses:
-                "200":
+                '200':
                     description: Успешная регистрация
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/UserResponse"
+                                $ref: '#/components/schemas/UserResponse'
 
     /api/user:
         get:
@@ -375,12 +375,12 @@ paths:
             security:
                 - TokenAuth: []
             responses:
-                "200":
+                '200':
                     description: Данные текущего пользователя
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/UserResponse"
+                                $ref: '#/components/schemas/UserResponse'
         put:
             summary: Обновление пользователя
             security:
@@ -390,14 +390,14 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/UserUpdateRequestBody"
+                            $ref: '#/components/schemas/UserUpdateRequestBody'
             responses:
-                "200":
+                '200':
                     description: Обновлённые данные пользователя
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/UserResponse"
+                                $ref: '#/components/schemas/UserResponse'
 
     /api/profiles/{username}:
         get:
@@ -409,12 +409,12 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Профиль пользователя
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ProfileResponse"
+                                $ref: '#/components/schemas/ProfileResponse'
 
     /api/profiles/{username}/follow:
         post:
@@ -428,12 +428,12 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Обновлённый профиль
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ProfileResponse"
+                                $ref: '#/components/schemas/ProfileResponse'
         delete:
             summary: Отписаться от пользователя
             security:
@@ -445,12 +445,12 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Обновлённый профиль
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ProfileResponse"
+                                $ref: '#/components/schemas/ProfileResponse'
 
     /api/articles:
         get:
@@ -482,12 +482,12 @@ paths:
                       type: integer
                       default: 0
             responses:
-                "200":
+                '200':
                     description: Список статей (без body)
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ArticlesResponse"
+                                $ref: '#/components/schemas/ArticlesResponse'
         post:
             summary: Создать статью
             security:
@@ -497,14 +497,14 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/ArticleRequestBody"
+                            $ref: '#/components/schemas/ArticleRequestBody'
             responses:
-                "200":
+                '200':
                     description: Созданная статья
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ArticleResponse"
+                                $ref: '#/components/schemas/ArticleResponse'
 
     /api/articles/feed:
         get:
@@ -523,12 +523,12 @@ paths:
                       type: integer
                       default: 0
             responses:
-                "200":
+                '200':
                     description: Лента статей (без body)
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ArticlesResponse"
+                                $ref: '#/components/schemas/ArticlesResponse'
 
     /api/articles/{slug}:
         get:
@@ -540,12 +540,12 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Статья
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ArticleResponse"
+                                $ref: '#/components/schemas/ArticleResponse'
         put:
             summary: Обновить статью
             security:
@@ -561,14 +561,14 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/ArticleUpdateRequestBody"
+                            $ref: '#/components/schemas/ArticleUpdateRequestBody'
             responses:
-                "200":
+                '200':
                     description: Обновлённая статья
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ArticleResponse"
+                                $ref: '#/components/schemas/ArticleResponse'
         delete:
             summary: Удалить статью
             security:
@@ -580,7 +580,7 @@ paths:
                   schema:
                       type: string
             responses:
-                "204":
+                '204':
                     description: Статья удалена
 
     /api/articles/{slug}/comments:
@@ -599,14 +599,14 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/CommentRequestBody"
+                            $ref: '#/components/schemas/CommentRequestBody'
             responses:
-                "200":
+                '200':
                     description: Созданный комментарий
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/CommentResponse"
+                                $ref: '#/components/schemas/CommentResponse'
         get:
             summary: Получить комментарии к статье
             parameters:
@@ -616,12 +616,12 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Список комментариев
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/CommentsResponse"
+                                $ref: '#/components/schemas/CommentsResponse'
 
     /api/articles/{slug}/comments/{id}:
         delete:
@@ -640,7 +640,7 @@ paths:
                   schema:
                       type: integer
             responses:
-                "204":
+                '204':
                     description: Комментарий удалён
 
     /api/articles/{slug}/favorite:
@@ -655,12 +655,12 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Статья с обновлёнными полями избранного
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ArticleResponse"
+                                $ref: '#/components/schemas/ArticleResponse'
         delete:
             summary: Удалить статью из избранного
             security:
@@ -672,20 +672,20 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Статья с обновлёнными полями избранного
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/ArticleResponse"
+                                $ref: '#/components/schemas/ArticleResponse'
 
     /api/tags:
         get:
             summary: Получить список тегов
             responses:
-                "200":
+                '200':
                     description: Список тегов
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/TagsResponse"
+                                $ref: '#/components/schemas/TagsResponse'

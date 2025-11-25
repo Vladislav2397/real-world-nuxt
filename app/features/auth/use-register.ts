@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/vue-query'
+import type { ApiError } from '~/shared/api/http-client'
 import { authApi, type RegisterDto } from '~/shared/api/rest/auth'
 
 export const useRegister = () => {
@@ -18,7 +19,7 @@ export const useRegister = () => {
     }
 
     const errors = computed(() => {
-        const value = registerMutation.error.value?.errors
+        const value = (registerMutation.error.value as ApiError)?.errors
 
         if (!value) return []
 

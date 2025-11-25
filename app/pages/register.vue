@@ -8,13 +8,16 @@
                         <NuxtLink to="/login">Have an account?</NuxtLink>
                     </p>
 
-                    <!-- <ul class="error-messages">
-                        <li>That email is already taken</li>
-                    </ul> -->
+                    <ul class="error-messages">
+                        <li v-for="error in errors" :key="error">
+                            {{ error }}
+                        </li>
+                    </ul>
 
                     <form @submit.prevent="handleSubmit">
                         <fieldset class="form-group">
                             <input
+                                name="username"
                                 class="form-control form-control-lg"
                                 type="text"
                                 placeholder="Username"
@@ -22,6 +25,7 @@
                         </fieldset>
                         <fieldset class="form-group">
                             <input
+                                name="email"
                                 class="form-control form-control-lg"
                                 type="text"
                                 placeholder="Email"
@@ -30,6 +34,7 @@
                         <fieldset class="form-group">
                             <input
                                 class="form-control form-control-lg"
+                                name="password"
                                 type="password"
                                 placeholder="Password"
                             />
@@ -52,7 +57,7 @@ definePageMeta({
     middleware: 'auth-guard',
 })
 
-const { register } = useRegister()
+const { register, errors } = useRegister()
 
 async function handleSubmit(e: Event) {
     const formData = new FormData(e.target as HTMLFormElement)

@@ -71,13 +71,12 @@ const { data: articlesData, suspense: articlesSuspense } = useQuery({
     queryFn: () => articleApi.getList({}),
 })
 const articles = computed(() => articlesData.value?.articles ?? [])
+onServerPrefetch(articlesSuspense)
 
 const { data: tagsData, suspense: tagsSuspense } = useQuery({
     queryKey: ['tag-list'],
     queryFn: articleApi.getTagList,
 })
 const tags = computed(() => tagsData.value?.tags ?? [])
-
-onServerPrefetch(articlesSuspense)
 onServerPrefetch(tagsSuspense)
 </script>

@@ -1,213 +1,121 @@
-const getArticleListRequest = async (_params: { username?: string }) => {
-    return {
-        articles: [
-            {
-                slug: 'how-to-train-your-dragon',
-                title: 'How to train your dragon',
-                description: 'Ever wonder how?',
-                tagList: ['dragons', 'training'],
-                createdAt: '2016-02-18T03:22:56.637Z',
-                updatedAt: '2016-02-18T03:48:35.824Z',
-                favorited: false,
-                favoritesCount: 0,
-                author: {
-                    username: 'jake',
-                    bio: 'I work at statefarm',
-                    image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                    following: false,
-                },
-            },
-            {
-                slug: 'how-to-train-your-dragon-2',
-                title: 'How to train your dragon 2',
-                description: 'So toothless',
-                tagList: ['dragons', 'training'],
-                createdAt: '2016-02-18T03:22:56.637Z',
-                updatedAt: '2016-02-18T03:48:35.824Z',
-                favorited: false,
-                favoritesCount: 0,
-                author: {
-                    username: 'jake',
-                    bio: 'I work at statefarm',
-                    image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                    following: false,
-                },
-            },
-        ],
-        articlesCount: 2,
-    }
+import { httpClient } from '../http-client'
+
+const getArticleListRequest = async (params?: {
+    tag?: string
+    author?: string
+    favorited?: string
+    limit?: number
+    offset?: number
+}) => {
+    const response = await httpClient.get('/api/articles', { params })
+
+    return response.data
 }
 
-const getArticleBySlugRequest = async (_params: { slug: string }) => {
-    return {
-        article: {
-            slug: 'how-to-train-your-dragon',
-            title: 'How to train your dragon',
-            description: 'Ever wonder how?',
-            body: 'It takes a Jacobian',
-            tagList: ['dragons', 'training'],
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:48:35.824Z',
-            favorited: false,
-            favoritesCount: 0,
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
-            },
-        },
-    }
+const getArticleBySlugRequest = async (params: { slug: string }) => {
+    const response = await httpClient.get(`/api/articles/${params.slug}`)
+
+    return response.data
 }
 
-const getCommentListRequest = async (_params: { slug: string }) => {
-    return {
-        comments: [
-            {
-                id: 1,
-                createdAt: '2016-02-18T03:22:56.637Z',
-                updatedAt: '2016-02-18T03:22:56.637Z',
-                body: 'It takes a Jacobian',
-                author: {
-                    username: 'jake',
-                    bio: 'I work at statefarm',
-                    image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                    following: false,
-                },
-            },
-        ],
-    }
+const getCommentListRequest = async (params: { slug: string }) => {
+    const response = await httpClient.get(
+        `/api/articles/${params.slug}/comments`
+    )
+
+    return response.data
 }
 
-const getCommentByIdRequest = async (_id: number) => {
-    return {
-        comment: {
-            id: 1,
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:22:56.637Z',
-            body: 'It takes a Jacobian',
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
+const createCommentRequest = async (params: { slug: string; body: string }) => {
+    const response = await httpClient.post(
+        `/api/articles/${params.slug}/comments`,
+        {
+            comment: {
+                body: params.body,
             },
-        },
-    }
+        }
+    )
+
+    return response.data
 }
 
-const createArticleRequest = async (_data: {
+const deleteCommentRequest = async (params: { slug: string; id: number }) => {
+    await httpClient.delete(
+        `/api/articles/${params.slug}/comments/${params.id}`
+    )
+}
+
+const createArticleRequest = async (data: {
     title: string
     description: string
     body: string
     tagList: string[]
 }) => {
-    return {
-        article: {
-            slug: 'how-to-train-your-dragon',
-            title: 'How to train your dragon',
-            description: 'Ever wonder how?',
-            body: 'It takes a Jacobian',
-            tagList: ['dragons', 'training'],
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:48:35.824Z',
-            favorited: false,
-            favoritesCount: 0,
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
-            },
-        },
-    }
+    const response = await httpClient.post('/api/articles', {
+        article: data,
+    })
+
+    return response.data
 }
 
-const editArticleRequest = async (_data: {
-    title: string
-    description: string
-    body: string
-    tagList: string[]
+const editArticleRequest = async (params: {
+    slug: string
+    title?: string
+    description?: string
+    body?: string
+    tagList?: string[]
 }) => {
-    return {
-        article: {
-            slug: 'how-to-train-your-dragon',
-            title: 'How to train your dragon',
-            description: 'Ever wonder how?',
-            body: 'It takes a Jacobian',
-            tagList: ['dragons', 'training'],
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:48:35.824Z',
-            favorited: false,
-            favoritesCount: 0,
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
-            },
-        },
-    }
+    const { slug, ...articleData } = params
+    const response = await httpClient.put(`/api/articles/${slug}`, {
+        article: articleData,
+    })
+
+    return response.data
 }
 
-const favoriteArticleRequest = async (_data: { slug: string }) => {
-    return {
-        article: {
-            slug: 'how-to-train-your-dragon',
-            title: 'How to train your dragon',
-            description: 'Ever wonder how?',
-            body: 'It takes a Jacobian',
-            tagList: ['dragons', 'training'],
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:48:35.824Z',
-            favorited: true,
-            favoritesCount: 0,
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
-            },
-        },
-    }
+const deleteArticleRequest = async (params: { slug: string }) => {
+    await httpClient.delete(`/api/articles/${params.slug}`)
 }
 
-const unfavoriteArticleRequest = async (_data: { slug: string }) => {
-    return {
-        article: {
-            slug: 'how-to-train-your-dragon',
-            title: 'How to train your dragon',
-            description: 'Ever wonder how?',
-            body: 'It takes a Jacobian',
-            tagList: ['dragons', 'training'],
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:48:35.824Z',
-            favorited: false,
-            favoritesCount: 0,
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
-            },
-        },
-    }
+const favoriteArticleRequest = async (params: { slug: string }) => {
+    const response = await httpClient.post(
+        `/api/articles/${params.slug}/favorite`
+    )
+
+    return response.data
+}
+
+const unfavoriteArticleRequest = async (params: { slug: string }) => {
+    const response = await httpClient.delete(
+        `/api/articles/${params.slug}/favorite`
+    )
+
+    return response.data
+}
+
+const getFeedRequest = async (params?: { limit?: number; offset?: number }) => {
+    const response = await httpClient.get('/api/articles/feed', { params })
+
+    return response.data
 }
 
 const getTagListRequest = async () => {
-    return {
-        tags: ['reactjs', 'angularjs'],
-    }
+    const response = await httpClient.get('/api/tags')
+
+    return response.data
 }
 
 export const articleApi = {
     getList: getArticleListRequest,
     getBySlug: getArticleBySlugRequest,
+    getFeed: getFeedRequest,
     create: createArticleRequest,
     edit: editArticleRequest,
+    delete: deleteArticleRequest,
     favorite: favoriteArticleRequest,
     unfavorite: unfavoriteArticleRequest,
     getComments: getCommentListRequest,
-    getCommentById: getCommentByIdRequest,
+    createComment: createCommentRequest,
+    deleteComment: deleteCommentRequest,
     getTagList: getTagListRequest,
 }

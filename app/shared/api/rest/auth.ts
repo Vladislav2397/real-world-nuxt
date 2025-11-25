@@ -5,31 +5,11 @@ export type LoginDto = {
     password: string
 }
 const loginRequest = async (data: LoginDto) => {
-    const result = await httpClient.post('/api/users/login', data)
+    const result = await httpClient.post('/api/users/login', {
+        user: data,
+    })
 
-    return result.data as {
-        user: {
-            email: string
-            token: string
-            username: string
-            bio: string
-            image: string | null
-        }
-    }
-
-    // if (data.email === 'test@test.com' && data.password === 'password') {
-    //     return {
-    //         user: {
-    //             email: 'jake@jake.jake',
-    //             token: 'jwt.token.here',
-    //             username: 'jake',
-    //             bio: 'I work at statefarm',
-    //             image: null,
-    //         },
-    //     }
-    // }
-
-    // throw new Error('Invalid email or password')
+    return result.data
 }
 
 export type RegisterDto = {
@@ -37,19 +17,38 @@ export type RegisterDto = {
     email: string
     password: string
 }
-const registerRequest = async (_data: RegisterDto) => {
-    return {
-        user: {
-            email: 'jake@jake.jake',
-            token: 'jwt.token.here',
-            username: 'jake',
-            bio: 'I work at statefarm',
-            image: null,
-        },
-    }
+const registerRequest = async (data: RegisterDto) => {
+    const result = await httpClient.post('/api/users', {
+        user: data,
+    })
+
+    return result.data
+}
+
+const getCurrentUserRequest = async () => {
+    const result = await httpClient.get('/api/user')
+
+    return result.data
+}
+
+export type UpdateUserDto = {
+    email?: string
+    username?: string
+    password?: string
+    bio?: string
+    image?: string
+}
+const updateUserRequest = async (data: UpdateUserDto) => {
+    const result = await httpClient.put('/api/user', {
+        user: data,
+    })
+
+    return result.data
 }
 
 export const authApi = {
     login: loginRequest,
     register: registerRequest,
+    getCurrentUser: getCurrentUserRequest,
+    updateUser: updateUserRequest,
 }
