@@ -1,12 +1,17 @@
-export default defineEventHandler(_event => {
+import { getCurrentUser } from '../../utils/auth'
+import { transformUser } from '../../utils/transform'
+
+export default defineEventHandler(event => {
+    const user = getCurrentUser(event)
+
+    if (!user) {
+        throw createError({
+            statusCode: 401,
+            message: 'Unauthorized',
+        })
+    }
+
     return {
-        user: {
-            email: 'jake@jake.jake',
-            token: 'jwt.token.here',
-            username: 'jake',
-            bio: 'I work at statefarm',
-            image: null,
-        },
+        user: transformUser(user),
     }
 })
-

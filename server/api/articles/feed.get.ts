@@ -1,24 +1,32 @@
-export default defineEventHandler(_event => {
+import { getQuery } from 'h3'
+import { getCurrentUser } from '../../utils/auth'
+import { getFeedArticles } from '../../utils/articles'
+import { transformArticlePreview } from '../../utils/transform'
+
+export default defineEventHandler(event => {
+    const currentUser = getCurrentUser(event)
+
+    if (!currentUser) {
+        throw createError({
+            statusCode: 401,
+            message: 'Unauthorized',
+        })
+    }
+
+    const query = getQuery(event)
+    const limit = query.limit ? Number(query.limit) : undefined
+    const offset = query.offset ? Number(query.offset) : undefined
+
+    const { articles, articlesCount } = getFeedArticles(
+        currentUser.id,
+        limit,
+        offset
+    )
+
     return {
-        articles: [
-            {
-                slug: 'how-to-train-your-dragon',
-                title: 'How to train your dragon',
-                description: 'Ever wonder how?',
-                tagList: ['dragons', 'training'],
-                createdAt: '2016-02-18T03:22:56.637Z',
-                updatedAt: '2016-02-18T03:48:35.824Z',
-                favorited: false,
-                favoritesCount: 0,
-                author: {
-                    username: 'jake',
-                    bio: 'I work at statefarm',
-                    image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                    following: false,
-                },
-            },
-        ],
-        articlesCount: 1,
+        articles: articles.map(article =>
+            transformArticlePreview(article, currentUser.id)
+        ),
+        articlesCount,
     }
 })
-

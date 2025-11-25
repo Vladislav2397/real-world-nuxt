@@ -1,14 +1,36 @@
+import { getCurrentUser } from '../../utils/auth'
+import { updateUser } from '../../utils/users'
+import { transformUser } from '../../utils/transform'
+
 export default defineEventHandler(async event => {
+    const currentUser = getCurrentUser(event)
+
+    if (!currentUser) {
+        throw createError({
+            statusCode: 401,
+            message: 'Unauthorized',
+        })
+    }
+
     const body = await readBody(event)
 
+    const updatedUser = updateUser(currentUser.id, {
+        email: body?.user?.email,
+        username: body?.user?.username,
+        password: body?.user?.password,
+        bio: body?.user?.bio,
+        image: body?.user?.image,
+    })
+
+    if (!updatedUser) {
+        throw createError({
+            statusCode: 404,
+            message: 'User not found',
+        })
+    }
+
     return {
-        user: {
-            email: body?.user?.email || 'jake@jake.jake',
-            token: 'jwt.token.here',
-            username: body?.user?.username || 'jake',
-            bio: body?.user?.bio || 'I work at statefarm',
-            image: body?.user?.image || null,
-        },
+        user: transformUser(updatedUser),
     }
 })
 

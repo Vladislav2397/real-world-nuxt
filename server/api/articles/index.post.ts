@@ -1,24 +1,39 @@
+import { getCurrentUser } from '../../utils/auth'
+import { createArticle } from '../../utils/articles'
+import { transformArticle } from '../../utils/transform'
+
 export default defineEventHandler(async event => {
+    const currentUser = getCurrentUser(event)
+
+    if (!currentUser) {
+        throw createError({
+            statusCode: 401,
+            message: 'Unauthorized',
+        })
+    }
+
     const body = await readBody(event)
 
+    if (
+        !body?.article?.title ||
+        !body?.article?.description ||
+        !body?.article?.body
+    ) {
+        throw createError({
+            statusCode: 422,
+            message: 'Title, description and body are required',
+        })
+    }
+
+    const article = createArticle({
+        title: body.article.title,
+        description: body.article.description,
+        body: body.article.body,
+        tagList: body.article.tagList || [],
+        authorId: currentUser.id,
+    })
+
     return {
-        article: {
-            slug: 'how-to-train-your-dragon',
-            title: body?.article?.title || 'How to train your dragon',
-            description: body?.article?.description || 'Ever wonder how?',
-            body: body?.article?.body || 'It takes a Jacobian',
-            tagList: body?.article?.tagList || ['dragons', 'training'],
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:48:35.824Z',
-            favorited: false,
-            favoritesCount: 0,
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
-            },
-        },
+        article: transformArticle(article, currentUser.id),
     }
 })
-

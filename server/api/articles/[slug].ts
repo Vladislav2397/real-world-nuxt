@@ -1,21 +1,29 @@
-export default defineEventHandler(_event => {
+import { getRouterParam } from 'h3'
+import { findArticleBySlug } from '../../utils/articles'
+import { transformArticle } from '../../utils/transform'
+import { getCurrentUser } from '../../utils/auth'
+
+export default defineEventHandler(event => {
+    const slug = getRouterParam(event, 'slug')
+    const currentUser = getCurrentUser(event)
+
+    if (!slug) {
+        throw createError({
+            statusCode: 400,
+            message: 'Slug is required',
+        })
+    }
+
+    const article = findArticleBySlug(slug)
+
+    if (!article) {
+        throw createError({
+            statusCode: 404,
+            message: 'Article not found',
+        })
+    }
+
     return {
-        article: {
-            slug: 'how-to-train-your-dragon',
-            title: 'How to train your dragon',
-            description: 'Ever wonder how?',
-            body: 'It takes a Jacobian',
-            tagList: ['dragons', 'training'],
-            createdAt: '2016-02-18T03:22:56.637Z',
-            updatedAt: '2016-02-18T03:48:35.824Z',
-            favorited: false,
-            favoritesCount: 0,
-            author: {
-                username: 'jake',
-                bio: 'I work at statefarm',
-                image: 'https://i.stack.imgur.com/xHWG8.jpg',
-                following: false,
-            },
-        },
+        article: transformArticle(article, currentUser?.id),
     }
 })
