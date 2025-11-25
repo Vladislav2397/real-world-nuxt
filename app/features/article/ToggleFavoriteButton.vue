@@ -3,7 +3,7 @@
         class="btn btn-outline-primary btn-sm pull-xs-right"
         @click="toggle"
     >
-        <i class="ion-heart"></i> {{ article.favoritesCount }}
+        <i class="ion-heart"></i> <slot></slot>
     </button>
 </template>
 

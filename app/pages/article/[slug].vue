@@ -25,16 +25,15 @@
                         >
                     </button>
                     &nbsp;&nbsp;
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        @click="toggleFavorite"
+                    <ToggleFavoriteButton
+                        :article="article"
+                        text="Favorite Article"
                     >
-                        <i class="ion-heart"></i>
                         &nbsp; Favorite Post
-                        <span class="counter"
-                            >({{ article.favoritesCount }})</span
-                        >
-                    </button>
+                        <span class="counter">
+                            ({{ article.favoritesCount }})
+                        </span>
+                    </ToggleFavoriteButton>
                     <EditArticleButton :article="article" />
                     <button class="btn btn-sm btn-outline-danger">
                         <i class="ion-trash-a"></i> Delete Article
@@ -81,16 +80,12 @@
                         &nbsp; Follow {{ article.author.username }}
                     </button>
                     &nbsp;
-                    <button
-                        class="btn btn-sm btn-outline-primary"
-                        @click="toggleFavorite"
-                    >
-                        <i class="ion-heart"></i>
+                    <ToggleFavoriteButton :article="article">
                         &nbsp; Favorite Article
-                        <span class="counter"
-                            >({{ article.favoritesCount }})</span
-                        >
-                    </button>
+                        <span class="counter">
+                            ({{ article.favoritesCount }})
+                        </span>
+                    </ToggleFavoriteButton>
                     <EditArticleButton :article="article" />
                     <DeleteArticleButton :article="article" />
                 </div>
@@ -132,26 +127,25 @@
 import { useQuery } from '@tanstack/vue-query'
 import DeleteArticleButton from '~/features/article/DeleteArticleButton.vue'
 import EditArticleButton from '~/features/article/EditArticleButton.vue'
-import { useToggleFavorite } from '~/features/article/use-toggle-favorite'
+import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
 import { articleApi } from '~/shared/api/rest/article'
 
-const props = defineProps<{
-    slug: string
-}>()
+const route = useRoute()
+const slug = `${route.params.slug?.toString() ?? ''}`
 
 const { data: articleData, suspense: articleSuspense } = useQuery({
-    queryKey: ['article', props.slug],
-    queryFn: () => articleApi.getBySlug({ slug: props.slug }),
+    queryKey: ['article', slug],
+    queryFn: () => articleApi.getBySlug({ slug: slug }),
 })
-onServerPrefetch(articleSuspense)
 const article = computed(() => articleData.value?.article ?? null)
 
 const { data: commentsData, suspense: commentsSuspense } = useQuery({
-    queryKey: ['comments', props.slug],
-    queryFn: () => articleApi.getComments({ slug: props.slug }),
+    queryKey: ['comments', slug],
+    queryFn: () => articleApi.getComments({ slug: slug }),
 })
-onServerPrefetch(commentsSuspense)
 const comments = computed(() => commentsData.value?.comments ?? null)
 
-const { toggle: toggleFavorite } = useToggleFavorite(article.value)
+onServerPrefetch(async () => {
+    await Promise.all([articleSuspense, commentsSuspense])
+})
 </script>
