@@ -27,7 +27,11 @@
                         v-for="article in articles"
                         :key="article.slug"
                         :article="article"
-                    />
+                    >
+                        <template #favorite-action>
+                            <ToggleFavoriteButton :article="article" />
+                        </template>
+                    </Article>
 
                     <ul class="pagination">
                         <li class="page-item active">
@@ -64,6 +68,7 @@
 import { useQuery } from '@tanstack/vue-query'
 import { articleApi } from '~/shared/api/rest/article'
 import { onServerPrefetch } from 'vue'
+import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
 
 // This will be prefetched and sent from the server
 const { data: articlesData, suspense: articlesSuspense } = useQuery({

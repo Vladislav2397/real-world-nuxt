@@ -6,7 +6,7 @@ export const getCurrentUser = (event: H3Event<EventHandlerRequest>) => {
     const authHeader = getHeader(event, 'authorization')
     if (!authHeader) return null
 
-    // Формат: "Token <token>" или "Bearer <token>"
-    const token = authHeader.replace(/^(Token|Bearer)\s+/i, '')
+    // Формат: "Bearer <token>"
+    const token = authHeader.replace(/^(Bearer)\s+/i, '')
     return findUserByToken(token)
 }

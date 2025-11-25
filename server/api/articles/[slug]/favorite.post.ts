@@ -7,9 +7,8 @@ export default defineEventHandler(event => {
     const currentUser = getCurrentUser(event)
 
     if (!currentUser) {
-        throw createError({
-            statusCode: 401,
-            message: 'Unauthorized',
+        return createCustomError(event, 401, {
+            errors: {},
         })
     }
 

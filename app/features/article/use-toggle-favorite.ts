@@ -3,24 +3,22 @@ import type { Article } from '~/shared/api/contracts/article'
 import { articleApi } from '~/shared/api/rest/article'
 
 export const useToggleFavorite = (
-    article: Pick<Article, 'slug' | 'favorited'> | null
+    article: Pick<Article, 'slug' | 'favorited'>
 ) => {
-    const { mutateAsync: favoriteArticle } = useMutation({
-        mutationKey: ['favorite-article'],
+    const favoriteArticleMutation = useMutation({
+        mutationKey: ['article', article.slug, 'favorite'],
         mutationFn: articleApi.favorite,
     })
-    const { mutateAsync: unfavoriteArticle } = useMutation({
-        mutationKey: ['unfavorite-article'],
+    const unfavoriteArticleMutation = useMutation({
+        mutationKey: ['article', article.slug, 'unfavorite'],
         mutationFn: articleApi.unfavorite,
     })
 
-    const toggle = async () => {
-        if (!article) return
-
+    async function toggle() {
         if (article.favorited) {
-            await unfavoriteArticle({ slug: article.slug })
+            unfavoriteArticleMutation.mutate({ slug: article.slug })
         } else {
-            await favoriteArticle({ slug: article.slug })
+            favoriteArticleMutation.mutate({ slug: article.slug })
         }
     }
 

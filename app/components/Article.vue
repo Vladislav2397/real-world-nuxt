@@ -13,9 +13,7 @@
                 </NuxtLink>
                 <span class="date">{{ article.createdAt }}</span>
             </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> {{ article.favoritesCount }}
-            </button>
+            <slot name="favorite-action"></slot>
         </div>
         <NuxtLink :to="`/article/${article.slug}`" class="preview-link">
             <h1>{{ article.title }}</h1>
