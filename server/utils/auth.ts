@@ -1,12 +1,18 @@
-import { getHeader } from 'h3'
+// import { getHeader } from 'h3'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { findUserByToken } from './users'
 
 export const getCurrentUser = (event: H3Event<EventHandlerRequest>) => {
-    const authHeader = getHeader(event, 'authorization')
-    if (!authHeader) return null
+    // const authHeader = getHeader(event, 'authorization')
+    // if (!authHeader) return null
 
-    // Формат: "Bearer <token>"
-    const token = authHeader.replace(/^(Bearer)\s+/i, '')
+    // // Формат: "Bearer <token>"
+    // const token = authHeader.replace(/^(Bearer)\s+/i, '')
+    // return findUserByToken(token)
+
+    const token = getCookie(event, 'token')
+    console.log('token', token, event._path)
+    if (!token) return null
+
     return findUserByToken(token)
 }

@@ -128,24 +128,25 @@ import { useQuery } from '@tanstack/vue-query'
 import DeleteArticleButton from '~/features/article/DeleteArticleButton.vue'
 import EditArticleButton from '~/features/article/EditArticleButton.vue'
 import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
+import { articleBySlugQueryOptions } from '~/shared/api/query-options/article'
 import { articleApi } from '~/shared/api/rest/article'
 
 const route = useRoute()
-const slug = `${route.params.slug?.toString() ?? ''}`
+const params = computed(() => ({
+    slug: route.params.slug?.toString() ?? '',
+}))
 
-const { data: articleData, suspense: articleSuspense } = useQuery({
-    queryKey: ['article', slug],
-    queryFn: () => articleApi.getBySlug({ slug: slug }),
-})
+const { data: articleData, suspense: articleSuspense } = useQuery(
+    articleBySlugQueryOptions(params)
+)
 const article = computed(() => articleData.value?.article ?? null)
 
 const { data: commentsData, suspense: commentsSuspense } = useQuery({
-    queryKey: ['comments', slug],
-    queryFn: () => articleApi.getComments({ slug: slug }),
+    queryKey: ['comments', params.value.slug],
+    queryFn: () => articleApi.getComments(params.value),
 })
 const comments = computed(() => commentsData.value?.comments ?? null)
 
-onServerPrefetch(async () => {
-    await Promise.all([articleSuspense, commentsSuspense])
-})
+onServerPrefetch(articleSuspense)
+onServerPrefetch(commentsSuspense)
 </script>

@@ -29,7 +29,9 @@
                         :article="article"
                     >
                         <template #favorite-action>
-                            <ToggleFavoriteButton :article="article" />
+                            <ToggleFavoriteButton :article="article">
+                                &nbsp;{{ article.favoritesCount }}
+                            </ToggleFavoriteButton>
                         </template>
                     </Article>
 
@@ -69,12 +71,11 @@ import { useQuery } from '@tanstack/vue-query'
 import { articleApi } from '~/shared/api/rest/article'
 import { onServerPrefetch } from 'vue'
 import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
+import { articleListQueryOptions } from '~/shared/api/query-options/article'
 
-// This will be prefetched and sent from the server
-const { data: articlesData, suspense: articlesSuspense } = useQuery({
-    queryKey: ['article-list'],
-    queryFn: () => articleApi.getList({}),
-})
+const { data: articlesData, suspense: articlesSuspense } = useQuery(
+    articleListQueryOptions()
+)
 const articles = computed(() => articlesData.value?.articles ?? [])
 
 const { data: tagsData, suspense: tagsSuspense } = useQuery({

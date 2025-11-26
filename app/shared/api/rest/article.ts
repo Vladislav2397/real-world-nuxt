@@ -1,18 +1,20 @@
 import { httpClient } from '../http-client'
 
-const getArticleListRequest = async (params?: {
+export type GetArticleListParams = {
     tag?: string
     author?: string
     favorited?: string
     limit?: number
     offset?: number
-}) => {
+}
+const getArticleListRequest = async (params?: GetArticleListParams) => {
     const response = await httpClient.get('/api/articles', { params })
 
     return response.data
 }
 
-const getArticleBySlugRequest = async (params: { slug: string }) => {
+export type GetArticleBySlugParams = { slug: string }
+const getArticleBySlugRequest = async (params: GetArticleBySlugParams) => {
     const response = await httpClient.get(`/api/articles/${params.slug}`)
 
     return response.data

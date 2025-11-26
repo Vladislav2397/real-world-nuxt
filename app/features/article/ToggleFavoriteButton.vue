@@ -3,7 +3,8 @@
         class="btn btn-outline-primary btn-sm pull-xs-right"
         @click="toggle"
     >
-        <i class="ion-heart"></i> <slot></slot>
+        <i :class="article.favorited ? 'ion-heart-broken' : 'ion-heart'"></i>
+        <slot></slot>
     </button>
 </template>
 
