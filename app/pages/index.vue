@@ -13,12 +13,27 @@
                     <div class="feed-toggle">
                         <ul class="nav nav-pills outline-active">
                             <li class="nav-item">
-                                <a class="nav-link" href="">Your Feed</a>
+                                <NuxtLink
+                                    class="nav-link"
+                                    to="/">
+                                    Your Feed
+                                </NuxtLink>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link active" href="">
+                                <NuxtLink
+                                    class="nav-link active"
+                                    to="/">
                                     Global Feed
-                                </a>
+                                </NuxtLink>
+                            </li>
+                            <li
+                                v-if="currentTag"
+                                class="nav-item">
+                                <NuxtLink
+                                    class="nav-link"
+                                    :to="{ query: { tag: currentTag } }">
+                                    {{ currentTag }}
+                                </NuxtLink>
                             </li>
                         </ul>
                     </div>
@@ -26,8 +41,7 @@
                     <Article
                         v-for="article in articles"
                         :key="article.slug"
-                        :article="article"
-                    >
+                        :article="article">
                         <template #favorite-action>
                             <ToggleFavoriteButton :article="article">
                                 &nbsp;{{ article.favoritesCount }}
@@ -36,11 +50,18 @@
                     </Article>
 
                     <ul class="pagination">
-                        <li class="page-item active">
-                            <a class="page-link" href="">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="">2</a>
+                        <li
+                            v-for="page in pages"
+                            :key="page"
+                            :class="[
+                                'page-item',
+                                `${page}` === currentPage && 'active',
+                            ]">
+                            <NuxtLink
+                                class="page-link"
+                                :to="{ query: { page: `${page}` } }">
+                                {{ page }}
+                            </NuxtLink>
                         </li>
                     </ul>
                 </div>
@@ -54,8 +75,7 @@
                                 v-for="tag in tags"
                                 :key="tag"
                                 :to="{ query: { tag } }"
-                                class="tag-pill tag-default"
-                            >
+                                class="tag-pill tag-default">
                                 {{ tag }}
                             </NuxtLink>
                         </div>
@@ -72,9 +92,15 @@ import { articleApi } from '~/shared/api/rest/article'
 import { onServerPrefetch } from 'vue'
 import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
 import { articleListQueryOptions } from '~/shared/api/query-options/article'
+import { useRouteQuery } from '@vueuse/router'
+
+const pages = computed(() => [1, 2])
+const currentPage = useRouteQuery('page', '1')
+
+const currentTag = useRouteQuery('tag', '')
 
 const { data: articlesData, suspense: articlesSuspense } = useQuery(
-    articleListQueryOptions()
+    articleListQueryOptions(),
 )
 const articles = computed(() => articlesData.value?.articles ?? [])
 
@@ -84,6 +110,8 @@ const { data: tagsData, suspense: tagsSuspense } = useQuery({
 })
 const tags = computed(() => tagsData.value?.tags ?? [])
 
-onServerPrefetch(articlesSuspense)
-onServerPrefetch(tagsSuspense)
+onServerPrefetch(async () => {
+    await articlesSuspense()
+    await tagsSuspense()
+})
 </script>

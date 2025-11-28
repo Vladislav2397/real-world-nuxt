@@ -6,6 +6,9 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-07-15',
 
     modules: ['@nuxt/eslint', '@nuxt/test-utils/module'],
+    devServer: {
+        port: 5910,
+    },
     app: {
         head: {
             title: 'Conduit',

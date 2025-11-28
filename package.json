@@ -17,6 +17,8 @@
     "dependencies": {
         "@nuxt/eslint": "^1.10.0",
         "@tanstack/vue-query": "^5.91.2",
+        "@vueuse/core": "^14.1.0",
+        "@vueuse/router": "^14.1.0",
         "axios": "^1.13.2",
         "eslint": "^9.39.1",
         "nuxt": "^4.2.1",

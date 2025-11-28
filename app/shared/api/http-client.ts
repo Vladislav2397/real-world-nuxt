@@ -1,7 +1,7 @@
 import axios, { isAxiosError } from 'axios'
 
 export const httpClient = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: '/',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -13,18 +13,18 @@ httpClient.interceptors.response.use(
         if (isAxiosError(error) && error.response) {
             throw new ApiError(
                 error.response.status,
-                error.response.data.errors
+                error.response.data.errors,
             )
         }
 
         throw error
-    }
+    },
 )
 
 export class ApiError extends Error {
     constructor(
         public code: number,
-        public errors: Record<string, string[]>
+        public errors: Record<string, string[]>,
     ) {
         super('[ApiError]')
     }

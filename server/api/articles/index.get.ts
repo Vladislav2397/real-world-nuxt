@@ -17,11 +17,9 @@ export default defineEventHandler(event => {
 
     const { articles, articlesCount } = getArticles(filters)
 
-    console.log('transforms', favorites)
-
     return {
         articles: articles.map(article =>
-            transformArticlePreview(article, currentUser?.id)
+            transformArticlePreview(article, currentUser?.id),
         ),
         articlesCount,
     }

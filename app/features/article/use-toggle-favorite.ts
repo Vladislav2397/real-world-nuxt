@@ -7,39 +7,45 @@ import {
 import { articleApi } from '~/shared/api/rest/article'
 
 export const useToggleFavorite = (
-    article: Pick<Article, 'slug' | 'favorited'>
+    article: Ref<Pick<Article, 'slug' | 'favorited'>>,
 ) => {
     const queryClient = useQueryClient()
 
+    const isFavorite = computed(() => article.value.favorited)
+
     const favoriteArticleMutation = useMutation({
-        mutationKey: ['article', article.slug, 'favorite'],
+        mutationKey: ['article', article.value.slug, 'favorite'],
         mutationFn: articleApi.favorite,
         onSuccess: async () => {
             await queryClient.invalidateQueries(articleListQueryOptions())
             await queryClient.invalidateQueries(
-                articleBySlugQueryOptions({ slug: article.slug })
+                articleBySlugQueryOptions({ slug: article.value.slug }),
             )
         },
     })
     const unfavoriteArticleMutation = useMutation({
-        mutationKey: ['article', article.slug, 'unfavorite'],
+        mutationKey: ['article', article.value.slug, 'unfavorite'],
         mutationFn: articleApi.unfavorite,
         onSuccess: async () => {
             await queryClient.invalidateQueries(articleListQueryOptions())
             await queryClient.invalidateQueries(
-                articleBySlugQueryOptions({ slug: article.slug })
+                articleBySlugQueryOptions({ slug: article.value.slug }),
             )
         },
     })
 
     async function toggle() {
-        console.log('toggle', article.favorited)
-        if (article.favorited) {
+        console.log('toggle', isFavorite.value)
+        if (isFavorite.value) {
             console.log('unfavorite')
-            await unfavoriteArticleMutation.mutateAsync({ slug: article.slug })
+            await unfavoriteArticleMutation.mutateAsync({
+                slug: article.value.slug,
+            })
         } else {
             console.log('favorite')
-            await favoriteArticleMutation.mutateAsync({ slug: article.slug })
+            await favoriteArticleMutation.mutateAsync({
+                slug: article.value.slug,
+            })
         }
     }
 

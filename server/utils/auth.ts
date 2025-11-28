@@ -11,7 +11,6 @@ export const getCurrentUser = (event: H3Event<EventHandlerRequest>) => {
     // return findUserByToken(token)
 
     const token = getCookie(event, 'token')
-    console.log('token', token, event._path)
     if (!token) return null
 
     return findUserByToken(token)

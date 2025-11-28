@@ -31,7 +31,14 @@ export default defineEventHandler(event => {
         })
     }
 
-    removeFavorite(article.id, currentUser.id)
+    const isSuccess = removeFavorite(article.id, currentUser.id)
+
+    if (!isSuccess) {
+        throw createError({
+            statusCode: 400,
+            message: 'Article not favorited',
+        })
+    }
 
     return {
         article: transformArticle(article, currentUser.id),

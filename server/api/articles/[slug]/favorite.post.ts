@@ -30,7 +30,14 @@ export default defineEventHandler(event => {
         })
     }
 
-    addFavorite(article.id, currentUser.id)
+    const isSuccess = addFavorite(article.id, currentUser.id)
+
+    if (!isSuccess) {
+        throw createError({
+            statusCode: 400,
+            message: 'Article already favorited',
+        })
+    }
 
     return {
         article: transformArticle(article, currentUser.id),
