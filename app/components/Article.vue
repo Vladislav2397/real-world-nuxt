@@ -2,7 +2,12 @@
     <div class="article-preview">
         <div class="article-meta">
             <NuxtLink :to="`/profile/${article.author.username}`">
-                <img :src="article.author.image" />
+                <img
+                    :src="
+                        article.author.image ||
+                        'https://raw.githubusercontent.com/gothinkster/node-express-realworld-example-app/refs/heads/master/src/assets/images/smiley-cyrus.jpeg'
+                    "
+                />
             </NuxtLink>
             <div class="info">
                 <NuxtLink

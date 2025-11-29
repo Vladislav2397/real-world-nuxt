@@ -4,7 +4,7 @@
             <li>That title is required</li>
         </ul> -->
 
-        <form @submit.prevent="handleSubmit">
+        <form>
             <fieldset>
                 <fieldset class="form-group">
                     <input
@@ -55,7 +55,8 @@
                 </fieldset>
                 <button
                     class="btn btn-lg pull-xs-right btn-primary"
-                    type="submit"
+                    type="button"
+                    @click="handleSubmit"
                 >
                     Publish Article
                 </button>
@@ -73,8 +74,7 @@ const emit = defineEmits<{
     (e: 'created'): void
 }>()
 
-async function handleSubmit(e: Event) {
-    e.preventDefault()
+async function handleSubmit() {
     await create()
     emit('created')
 }

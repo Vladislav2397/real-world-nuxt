@@ -17,7 +17,6 @@ const isAuthorized = computed(() => !!token.value)
 // })
 
 onServerPrefetch(async () => {
-    console.log('app server prefetch', isAuthorized.value, token.value)
     if (!isAuthorized.value) return
 
     try {

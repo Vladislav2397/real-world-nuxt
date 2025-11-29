@@ -60,7 +60,13 @@
                         active-class="active"
                         :to="`/profile/${viewer.username}`"
                     >
-                        <img src="" class="user-pic" />
+                        <img
+                            :src="
+                                viewer.image ||
+                                'https://raw.githubusercontent.com/gothinkster/node-express-realworld-example-app/refs/heads/master/src/assets/images/smiley-cyrus.jpeg'
+                            "
+                            class="user-pic"
+                        />
                         {{ viewer.username }}
                     </NuxtLink>
                 </li>

@@ -4,23 +4,32 @@
             <div class="container">
                 <div class="row">
                     <div class="col-xs-12 col-md-10 offset-md-1">
-                        <img :src="user.image" class="user-img" />
+                        <img
+                            :src="
+                                user.image ||
+                                'https://raw.githubusercontent.com/gothinkster/node-express-realworld-example-app/refs/heads/master/src/assets/images/smiley-cyrus.jpeg'
+                            "
+                            class="user-img"
+                        />
                         <h4>{{ user.username }}</h4>
                         <p>
                             {{ user.bio }}
                         </p>
                         <button
+                            v-if="!isViewerProfile"
                             class="btn btn-sm btn-outline-secondary action-btn"
                         >
                             <i class="ion-plus-round"></i>
                             &nbsp; Follow {{ user.username }}
                         </button>
-                        <button
+                        <NuxtLink
+                            v-else
                             class="btn btn-sm btn-outline-secondary action-btn"
+                            to="/settings"
                         >
                             <i class="ion-gear-a"></i>
                             &nbsp; Edit Profile Settings
-                        </button>
+                        </NuxtLink>
                     </div>
                 </div>
             </div>
@@ -77,6 +86,8 @@ const props = defineProps<{
     username: string
 }>()
 
+const isViewerProfile = computed(() => true)
+
 const { data: userData, suspense: userSuspense } = useQuery({
     queryKey: ['user', props.username],
     queryFn: () => profileApi.getByUsername({ username: props.username }),
@@ -86,7 +97,7 @@ const user = computed(() => userData.value?.profile ?? null)
 
 const { data: articlesData, suspense: articlesSuspense } = useQuery({
     queryKey: ['articles', props.username],
-    queryFn: () => articleApi.getList({ username: props.username }),
+    queryFn: () => articleApi.getList({ author: props.username }),
 })
 onServerPrefetch(articlesSuspense)
 const articles = computed(() => articlesData.value?.articles ?? null)

@@ -86,12 +86,12 @@
 </template>
 
 <script setup lang="ts">
+import { onServerPrefetch } from 'vue'
+import { useRouteQuery } from '@vueuse/router'
 import { useQuery } from '@tanstack/vue-query'
 import { articleApi } from '~/shared/api/rest/article'
-import { onServerPrefetch } from 'vue'
 import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
 import { articleListQueryOptions } from '~/shared/api/query-options/article'
-import { useRouteQuery } from '@vueuse/router'
 
 const pages = computed(() => [1, 2])
 const currentPage = useRouteQuery('page', '1')

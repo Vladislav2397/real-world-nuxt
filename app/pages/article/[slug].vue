@@ -87,7 +87,10 @@
                         </span>
                     </ToggleFavoriteButton>
                     <EditArticleButton :article="article" />
-                    <DeleteArticleButton :article="article" />
+                    <DeleteArticleButton
+                        :article="article"
+                        @deleted="onDeleted"
+                    />
                 </div>
             </div>
 
@@ -151,6 +154,10 @@ const { data: commentsData, suspense: commentsSuspense } = useQuery({
     queryFn: () => articleApi.getComments(params.value),
 })
 const comments = computed(() => commentsData.value?.comments ?? null)
+
+function onDeleted() {
+    navigateTo('/')
+}
 
 onServerPrefetch(articleSuspense)
 onServerPrefetch(commentsSuspense)
