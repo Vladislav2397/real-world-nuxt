@@ -7,29 +7,30 @@ import {
 import { articleApi } from '~/shared/api/rest/article'
 
 export const useToggleFavorite = (
-    article: Ref<Pick<Article, 'slug' | 'favorited'>>,
+    article: Ref<Pick<Article, 'slug' | 'favorited'>>
 ) => {
     const queryClient = useQueryClient()
 
     const isFavorite = computed(() => article.value.favorited)
+    const slug = computed(() => article.value.slug)
 
     const favoriteArticleMutation = useMutation({
-        mutationKey: ['article', article.value.slug, 'favorite'],
+        mutationKey: ['article', slug, 'favorite'],
         mutationFn: articleApi.favorite,
         onSuccess: async () => {
             await queryClient.invalidateQueries(articleListQueryOptions())
             await queryClient.invalidateQueries(
-                articleBySlugQueryOptions({ slug: article.value.slug }),
+                articleBySlugQueryOptions({ slug: slug.value })
             )
         },
     })
     const unfavoriteArticleMutation = useMutation({
-        mutationKey: ['article', article.value.slug, 'unfavorite'],
+        mutationKey: ['article', slug, 'unfavorite'],
         mutationFn: articleApi.unfavorite,
         onSuccess: async () => {
             await queryClient.invalidateQueries(articleListQueryOptions())
             await queryClient.invalidateQueries(
-                articleBySlugQueryOptions({ slug: article.value.slug }),
+                articleBySlugQueryOptions({ slug: slug.value })
             )
         },
     })
@@ -39,12 +40,12 @@ export const useToggleFavorite = (
         if (isFavorite.value) {
             console.log('unfavorite')
             await unfavoriteArticleMutation.mutateAsync({
-                slug: article.value.slug,
+                slug: slug.value,
             })
         } else {
             console.log('favorite')
             await favoriteArticleMutation.mutateAsync({
-                slug: article.value.slug,
+                slug: slug.value,
             })
         }
     }

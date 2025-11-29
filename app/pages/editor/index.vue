@@ -2,7 +2,7 @@
     <div class="editor-page">
         <div class="container page">
             <div class="row">
-                <CreateArticleForm />
+                <CreateArticleForm @created="handleArticleCreated" />
             </div>
         </div>
     </div>
@@ -15,4 +15,8 @@ definePageMeta({
     roles: ['user'],
     middleware: 'auth-guard',
 })
+
+function handleArticleCreated() {
+    navigateTo('/')
+}
 </script>

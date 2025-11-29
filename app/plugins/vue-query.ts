@@ -8,8 +8,6 @@ import {
     hydrate,
     dehydrate,
 } from '@tanstack/vue-query'
-// Nuxt 3 app aliases
-import { defineNuxtPlugin, useState } from '#imports'
 
 export default defineNuxtPlugin(nuxt => {
     const vueQueryState = useState<DehydratedState | null>('vue-query')
@@ -22,7 +20,10 @@ export default defineNuxtPlugin(nuxt => {
             },
         },
     })
-    const options: VueQueryPluginOptions = { queryClient }
+    const options: VueQueryPluginOptions = {
+        queryClient,
+        enableDevtoolsV6Plugin: true,
+    }
 
     nuxt.vueApp.use(VueQueryPlugin, options)
 

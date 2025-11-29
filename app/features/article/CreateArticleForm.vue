@@ -65,21 +65,18 @@
 </template>
 
 <script setup lang="ts">
-import type { Article } from '~/shared/api/contracts/article'
 import { useCreateArticle } from './use-create-article'
 
 const { dto, create } = useCreateArticle()
 
 const emit = defineEmits<{
-    (e: 'created', article: Article): void
+    (e: 'created'): void
 }>()
 
 async function handleSubmit(e: Event) {
     e.preventDefault()
-    const { article } = await create()
-
-    console.log({ article })
-    emit('created', article)
+    await create()
+    emit('created')
 }
 
 const newTag = ref('')

@@ -1,5 +1,6 @@
-import { useMutation } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { articleApi } from '~/shared/api/rest/article'
+import { articleListQueryOptions } from '~/shared/api/query-options/article'
 
 type CreateArticleDto = {
     title: string
@@ -9,6 +10,8 @@ type CreateArticleDto = {
 }
 
 export const useCreateArticle = () => {
+    const queryClient = useQueryClient()
+
     const dto = ref<CreateArticleDto>({
         title: '',
         description: '',
@@ -19,6 +22,9 @@ export const useCreateArticle = () => {
     const { mutateAsync: createArticle } = useMutation({
         mutationKey: ['create-article'],
         mutationFn: articleApi.create,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(articleListQueryOptions())
+        },
     })
 
     const create = async () => {

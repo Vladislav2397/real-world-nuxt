@@ -13,25 +13,20 @@
                     <div class="feed-toggle">
                         <ul class="nav nav-pills outline-active">
                             <li class="nav-item">
-                                <NuxtLink
-                                    class="nav-link"
-                                    to="/">
+                                <NuxtLink class="nav-link" to="/">
                                     Your Feed
                                 </NuxtLink>
                             </li>
                             <li class="nav-item">
-                                <NuxtLink
-                                    class="nav-link active"
-                                    to="/">
+                                <NuxtLink class="nav-link active" to="/">
                                     Global Feed
                                 </NuxtLink>
                             </li>
-                            <li
-                                v-if="currentTag"
-                                class="nav-item">
+                            <li v-if="currentTag" class="nav-item">
                                 <NuxtLink
                                     class="nav-link"
-                                    :to="{ query: { tag: currentTag } }">
+                                    :to="{ query: { tag: currentTag } }"
+                                >
                                     {{ currentTag }}
                                 </NuxtLink>
                             </li>
@@ -41,7 +36,8 @@
                     <Article
                         v-for="article in articles"
                         :key="article.slug"
-                        :article="article">
+                        :article="article"
+                    >
                         <template #favorite-action>
                             <ToggleFavoriteButton :article="article">
                                 &nbsp;{{ article.favoritesCount }}
@@ -56,10 +52,12 @@
                             :class="[
                                 'page-item',
                                 `${page}` === currentPage && 'active',
-                            ]">
+                            ]"
+                        >
                             <NuxtLink
                                 class="page-link"
-                                :to="{ query: { page: `${page}` } }">
+                                :to="{ query: { page: `${page}` } }"
+                            >
                                 {{ page }}
                             </NuxtLink>
                         </li>
@@ -75,7 +73,8 @@
                                 v-for="tag in tags"
                                 :key="tag"
                                 :to="{ query: { tag } }"
-                                class="tag-pill tag-default">
+                                class="tag-pill tag-default"
+                            >
                                 {{ tag }}
                             </NuxtLink>
                         </div>
@@ -100,7 +99,7 @@ const currentPage = useRouteQuery('page', '1')
 const currentTag = useRouteQuery('tag', '')
 
 const { data: articlesData, suspense: articlesSuspense } = useQuery(
-    articleListQueryOptions(),
+    articleListQueryOptions()
 )
 const articles = computed(() => articlesData.value?.articles ?? [])
 
