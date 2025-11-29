@@ -8,7 +8,7 @@ export const transformUser = (user: User) => {
         email: user.email,
         token: user.token,
         username: user.username,
-        bio: user.bio,
+        bio: user.bio ?? '',
         image: user.image,
     }
 }
@@ -16,7 +16,7 @@ export const transformUser = (user: User) => {
 export const transformProfile = (user: User, currentUserId?: number) => {
     return {
         username: user.username,
-        bio: user.bio,
+        bio: user.bio ?? '',
         image: user.image,
         following:
             currentUserId !== undefined
@@ -64,11 +64,11 @@ export const transformArticlePreview = (
         tagList: article.tagList,
         createdAt: article.createdAt,
         updatedAt: article.updatedAt,
+        favoritesCount: article.favoritesCount,
         favorited:
             currentUserId !== undefined
                 ? isArticleFavorited(article.id, currentUserId)
                 : false,
-        favoritesCount: article.favoritesCount,
         author: transformProfile(author, currentUserId),
     }
 }

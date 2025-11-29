@@ -3,6 +3,7 @@ import {
     articleApi,
     type GetArticleBySlugParams,
     type GetArticleListParams,
+    type GetFeedListParams,
 } from '../rest/article'
 
 export const articleListQueryOptions = (params?: GetArticleListParams) => {
@@ -18,5 +19,14 @@ export const articleBySlugQueryOptions = (
     return queryOptions({
         queryKey: ['article', params],
         queryFn: () => articleApi.getBySlug(toValue(params)),
+    })
+}
+
+export const articleFeedListQueryOptions = (
+    params?: MaybeRefOrGetter<GetFeedListParams>
+) => {
+    return queryOptions({
+        queryKey: ['article-feed-list', params],
+        queryFn: () => articleApi.getFeedList(toValue(params)),
     })
 }

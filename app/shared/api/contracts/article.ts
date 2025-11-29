@@ -1,7 +1,7 @@
 export type Profile = {
     username: string
     bio: string
-    image: string
+    image: string | null
     following: boolean
 }
 

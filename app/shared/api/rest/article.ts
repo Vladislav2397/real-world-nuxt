@@ -8,9 +8,9 @@ export type GetArticleListParams = {
     offset?: number
 }
 const getArticleListRequest = async (params?: GetArticleListParams) => {
-    const response = await httpClient.get('/api/articles', { params })
+    const response = await $fetch('/api/articles', { query: params })
 
-    return response.data
+    return response
 }
 
 export type GetArticleBySlugParams = { slug: string }
@@ -95,7 +95,8 @@ const unfavoriteArticleRequest = async (params: { slug: string }) => {
     return response.data
 }
 
-const getFeedRequest = async (params?: { limit?: number; offset?: number }) => {
+export type GetFeedListParams = { limit?: number; offset?: number }
+const getFeedListRequest = async (params?: GetFeedListParams) => {
     const response = await httpClient.get('/api/articles/feed', { params })
 
     return response.data
@@ -110,7 +111,7 @@ const getTagListRequest = async () => {
 export const articleApi = {
     getList: getArticleListRequest,
     getBySlug: getArticleBySlugRequest,
-    getFeed: getFeedRequest,
+    getFeedList: getFeedListRequest,
     create: createArticleRequest,
     edit: editArticleRequest,
     delete: deleteArticleRequest,

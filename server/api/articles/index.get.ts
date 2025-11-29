@@ -19,7 +19,7 @@ export default defineEventHandler(event => {
 
     return {
         articles: articles.map(article =>
-            transformArticlePreview(article, currentUser?.id),
+            transformArticlePreview(article, currentUser?.id)
         ),
         articlesCount,
     }
