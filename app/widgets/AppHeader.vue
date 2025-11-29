@@ -54,14 +54,14 @@
                         <i class="ion-gear-a"></i>&nbsp;Settings
                     </NuxtLink>
                 </li>
-                <li class="nav-item">
+                <li v-if="viewer" class="nav-item">
                     <NuxtLink
                         class="nav-link"
                         active-class="active"
-                        to="/profile/eric-simons"
+                        :to="`/profile/${viewer.username}`"
                     >
                         <img src="" class="user-pic" />
-                        Eric Simons
+                        {{ viewer.username }}
                     </NuxtLink>
                 </li>
             </ul>
@@ -70,6 +70,15 @@
 </template>
 
 <script setup lang="ts">
+// import { useViewer } from '~/entities/viewer/model'
+
 const token = useCookie('token', { default: () => '' })
 const isAuthenticated = computed(() => !!token.value)
+
+const viewer = computed(() => ({
+    username: 'jake',
+    image: '',
+}))
+
+// const { viewer } = useViewer()
 </script>

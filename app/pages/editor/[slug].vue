@@ -73,6 +73,7 @@ import { articleApi } from '~/shared/api/rest/article'
 definePageMeta({
     roles: ['user'],
     middleware: 'auth-guard',
+    props: true,
 })
 
 const props = defineProps<{

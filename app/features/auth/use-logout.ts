@@ -1,8 +1,8 @@
 export const useLogout = () => {
-    const token = useCookie('token', { default: () => '' })
+    const token = useCookie('token')
 
     async function logout() {
-        token.value = ''
+        token.value = null
 
         return true
     }

@@ -69,6 +69,10 @@ import { useQuery } from '@tanstack/vue-query'
 import { articleApi } from '~/shared/api/rest/article'
 import { profileApi } from '~/shared/api/rest/profile'
 
+definePageMeta({
+    props: true,
+})
+
 const props = defineProps<{
     username: string
 }>()

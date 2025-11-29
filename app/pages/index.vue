@@ -12,7 +12,7 @@
                 <div class="col-md-9">
                     <div class="feed-toggle">
                         <ul class="nav nav-pills outline-active">
-                            <li class="nav-item">
+                            <li v-if="isAuthorized" class="nav-item">
                                 <NuxtLink class="nav-link" to="/">
                                     Your Feed
                                 </NuxtLink>
@@ -97,6 +97,9 @@ const pages = computed(() => [1, 2])
 const currentPage = useRouteQuery('page', '1')
 
 const currentTag = useRouteQuery('tag', '')
+
+const token = useCookie('token', { default: () => '' })
+const isAuthorized = computed(() => !!token.value)
 
 const { data: articlesData, suspense: articlesSuspense } = useQuery(
     articleListQueryOptions()

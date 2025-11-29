@@ -131,9 +131,14 @@ import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
 import { articleBySlugQueryOptions } from '~/shared/api/query-options/article'
 import { articleApi } from '~/shared/api/rest/article'
 
-const route = useRoute()
+definePageMeta({
+    props: true,
+})
+const props = defineProps<{
+    slug: string
+}>()
 const params = computed(() => ({
-    slug: route.params.slug?.toString() ?? '',
+    slug: props.slug,
 }))
 
 const { data: articleData, suspense: articleSuspense } = useQuery(
