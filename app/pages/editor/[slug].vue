@@ -55,6 +55,7 @@
                             <button
                                 class="btn btn-lg pull-xs-right btn-primary"
                                 type="button"
+                                @click="onPublish"
                             >
                                 Publish Article
                             </button>
@@ -67,8 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
-import { articleApi } from '~/shared/api/rest/article'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 
 definePageMeta({
     roles: ['user'],
@@ -90,9 +90,11 @@ function addTagToList() {
     newTag.value = ''
 }
 
+const httpClient = useHttpClient()
 const { data: articleData, suspense: articleSuspense } = useQuery({
     queryKey: ['article', props.slug],
-    queryFn: () => articleApi.getBySlug({ slug: props.slug }),
+    queryFn: () =>
+        httpClient(`/api/articles/${props.slug}` as '/api/articles/:slug'),
 })
 onServerPrefetch(articleSuspense)
 
@@ -123,4 +125,21 @@ watch(
         immediate: true,
     }
 )
+
+const { mutateAsync: editArticle } = useMutation({
+    mutationKey: ['edit-article', props.slug],
+    mutationFn: () =>
+        httpClient(`/api/articles/${props.slug}` as '/api/articles/:slug', {
+            method: 'PUT',
+            body: {
+                article: dto.value,
+            },
+        }),
+})
+
+async function onPublish() {
+    const result = await editArticle()
+
+    return result
+}
 </script>

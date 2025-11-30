@@ -19,21 +19,23 @@ export const useCreateArticle = () => {
         tagList: [],
     })
 
+    const httpClient = useHttpClient()
     const { mutateAsync: createArticle } = useMutation({
         mutationKey: ['create-article'],
-        mutationFn: articleApi.create,
+        mutationFn: () =>
+            httpClient(`/api/articles` as '/api/articles', {
+                method: 'POST',
+                body: {
+                    article: dto.value,
+                },
+            }),
         onSuccess: async () => {
             await queryClient.invalidateQueries(articleListQueryOptions())
         },
     })
 
     const create = async () => {
-        const result = await createArticle({
-            title: dto.value.title,
-            description: dto.value.description,
-            body: dto.value.body,
-            tagList: dto.value.tagList,
-        })
+        const result = await createArticle()
 
         return result
     }

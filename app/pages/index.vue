@@ -140,9 +140,7 @@ const { data: tagsData, suspense: tagsSuspense } = useQuery(
 const tags = computed(() => tagsData.value?.tags ?? [])
 
 onServerPrefetch(async () => {
-    const result = await articlesSuspense()
+    await articlesSuspense()
     await tagsSuspense()
-
-    console.log({ result: result.data?.articles })
 })
 </script>
