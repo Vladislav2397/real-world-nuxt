@@ -6,7 +6,11 @@
 
                 <div class="article-meta">
                     <a :href="`/profile/${article.author.username}`"
-                        ><img :src="article.author.image"
+                        ><img
+                            :src="
+                                article.author.image ??
+                                'https://raw.githubusercontent.com/gothinkster/node-express-realworld-example-app/refs/heads/master/src/assets/images/smiley-cyrus.jpeg'
+                            "
                     /></a>
                     <div class="info">
                         <a
@@ -63,7 +67,11 @@
             <div class="article-actions">
                 <div class="article-meta">
                     <a :href="`/profile/${article.author.username}`"
-                        ><img :src="article.author.image"
+                        ><img
+                            :src="
+                                article.author.image ??
+                                'https://raw.githubusercontent.com/gothinkster/node-express-realworld-example-app/refs/heads/master/src/assets/images/smiley-cyrus.jpeg'
+                            "
                     /></a>
                     <div class="info">
                         <a
@@ -160,6 +168,8 @@ function onDeleted() {
     navigateTo('/')
 }
 
-onServerPrefetch(articleSuspense)
-onServerPrefetch(commentsSuspense)
+onServerPrefetch(async () => {
+    await articleSuspense()
+    await commentsSuspense()
+})
 </script>

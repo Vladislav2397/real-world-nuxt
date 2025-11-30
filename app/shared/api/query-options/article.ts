@@ -9,14 +9,14 @@ import type {
 export const articleListQueryOptions = (
     params?: MaybeRefOrGetter<GetArticleListParams>
 ) => {
-    const httpClientPublic = useHttpClientPublic()
+    const httpClient = useHttpClient()
 
     const query = computed(() => toValue(params))
 
     return queryOptions({
-        queryKey: ['article-list', query],
+        queryKey: query.value ? ['article-list', query] : ['article-list'],
         queryFn: () => {
-            return httpClientPublic('/api/articles', { query: query.value })
+            return httpClient('/api/articles', { query: query.value })
         },
     })
 }

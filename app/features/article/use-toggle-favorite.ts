@@ -4,7 +4,6 @@ import {
     articleBySlugQueryOptions,
     articleListQueryOptions,
 } from '~/shared/api/query-options/article'
-import { articleApi } from '~/shared/api/rest/article'
 
 export const useToggleFavorite = (
     article: Ref<Pick<Article, 'slug' | 'favorited'>>
@@ -14,9 +13,14 @@ export const useToggleFavorite = (
     const isFavorite = computed(() => article.value.favorited)
     const slug = computed(() => article.value.slug)
 
+    const httpClient = useHttpClient()
+
     const favoriteArticleMutation = useMutation({
         mutationKey: ['article', slug, 'favorite'],
-        mutationFn: articleApi.favorite,
+        mutationFn: () =>
+            httpClient(`/api/articles/${slug.value}/favorite`, {
+                method: 'POST',
+            }),
         onSuccess: async () => {
             await queryClient.invalidateQueries(articleListQueryOptions())
             await queryClient.invalidateQueries(
@@ -26,7 +30,10 @@ export const useToggleFavorite = (
     })
     const unfavoriteArticleMutation = useMutation({
         mutationKey: ['article', slug, 'unfavorite'],
-        mutationFn: articleApi.unfavorite,
+        mutationFn: () =>
+            httpClient(`/api/articles/${slug.value}/favorite`, {
+                method: 'DELETE',
+            }),
         onSuccess: async () => {
             await queryClient.invalidateQueries(articleListQueryOptions())
             await queryClient.invalidateQueries(
@@ -39,14 +46,10 @@ export const useToggleFavorite = (
         console.log('toggle', isFavorite.value)
         if (isFavorite.value) {
             console.log('unfavorite')
-            await unfavoriteArticleMutation.mutateAsync({
-                slug: slug.value,
-            })
+            await unfavoriteArticleMutation.mutateAsync()
         } else {
             console.log('favorite')
-            await favoriteArticleMutation.mutateAsync({
-                slug: slug.value,
-            })
+            await favoriteArticleMutation.mutateAsync()
         }
     }
 

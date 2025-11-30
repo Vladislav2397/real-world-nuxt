@@ -41,8 +41,12 @@ export const useArticleListModel = () => {
         return feedListQuery.data.value?.articles ?? []
     })
 
-    const articlesSuspense = () =>
-        Promise.all([articleListQuery.suspense, feedListQuery.suspense])
+    const articlesSuspense = () => {
+        if (currentType.value === 'global') {
+            return articleListQuery.suspense()
+        }
+        return feedListQuery.suspense()
+    }
 
     const pages = computed(() => {
         const totalPages = Math.ceil(
