@@ -1,12 +1,13 @@
-import { useQuery } from '@tanstack/vue-query'
-import { profileApi } from '~/shared/api/rest/profile'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { authApi } from '~/shared/api/rest/auth'
+import { getCurrentUserQueryOptions } from '~/shared/api/query-options/auth'
 
 export const useEditSettings = () => {
-    const { data: userData, suspense: userSuspense } = useQuery({
-        queryKey: ['user'],
-        queryFn: () => profileApi.getByUsername({ username: 'jake' }),
-    })
-    const user = computed(() => userData.value?.profile ?? null)
+    const queryClient = useQueryClient()
+    const { data: userData, suspense: userSuspense } = useQuery(
+        getCurrentUserQueryOptions()
+    )
+    const user = computed(() => userData.value?.user ?? null)
 
     type UpdateUserDto = {
         image: string
@@ -26,11 +27,11 @@ export const useEditSettings = () => {
         user,
         newVal => {
             if (newVal) {
-                dto.value.image = newVal.image
-                dto.value.username = newVal.username
-                dto.value.bio = newVal.bio
-                // dto.value.email = newVal.email
-                // dto.value.password = newVal.password
+                dto.value.image = newVal.image ?? ''
+                dto.value.username = newVal.username ?? ''
+                dto.value.bio = newVal.bio ?? ''
+                dto.value.email = newVal.email ?? ''
+                // password не заполняем, так как это новое поле
             }
         },
         {
@@ -38,15 +39,23 @@ export const useEditSettings = () => {
         }
     )
 
-    function handleSubmit(e: Event) {
-        const formData = new FormData(e.target as HTMLFormElement)
-        const image = formData.get('image') as string
-        const username = formData.get('username') as string
-        const bio = formData.get('bio') as string
-        const email = formData.get('email') as string
-        const password = formData.get('password') as string
+    const { mutateAsync: updateUser } = useMutation({
+        mutationKey: ['update-user'],
+        mutationFn: () =>
+            authApi.updateUser({
+                image: dto.value.image,
+                username: dto.value.username,
+                bio: dto.value.bio,
+                email: dto.value.email,
+                password: dto.value.password || undefined,
+            }),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(getCurrentUserQueryOptions())
+        },
+    })
 
-        console.log({ image, username, bio, email, password })
+    async function handleSubmit() {
+        await updateUser()
     }
 
     return { userSuspense, dto, handleSubmit }
