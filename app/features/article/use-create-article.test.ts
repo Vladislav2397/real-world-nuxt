@@ -112,4 +112,3 @@ describe('useCreateArticle', () => {
         expect(queryClientMock.invalidateQueries).toHaveBeenCalledTimes(1)
     })
 })
-
