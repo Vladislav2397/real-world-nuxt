@@ -16,7 +16,9 @@
                 >
                     {{ article.author.username }}
                 </NuxtLink>
-                <span class="date">{{ article.createdAt }}</span>
+                <span class="date">{{
+                    dayjs(article.createdAt).format('MMMM D') + 'th'
+                }}</span>
             </div>
             <slot name="favorite-action"></slot>
         </div>
@@ -39,6 +41,7 @@
 
 <script setup lang="ts">
 import type { Article } from '~/shared/api/contracts/article'
+import dayjs from 'dayjs'
 
 defineProps<{
     article: Article

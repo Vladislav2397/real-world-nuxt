@@ -19,7 +19,9 @@
                         >
                             {{ article.author.username }}
                         </a>
-                        <span class="date">{{ article.createdAt }}</span>
+                        <span class="date">{{
+                            dayjs(article.createdAt).format('MMMM D') + 'th'
+                        }}</span>
                     </div>
                     <button class="btn btn-sm btn-outline-secondary">
                         <i class="ion-plus-round"></i>
@@ -39,9 +41,10 @@
                         </span>
                     </ToggleFavoriteButton>
                     <EditArticleButton :article="article" />
-                    <button class="btn btn-sm btn-outline-danger">
-                        <i class="ion-trash-a"></i> Delete Article
-                    </button>
+                    <DeleteArticleButton
+                        :article="article"
+                        @deleted="onDeleted"
+                    />
                 </div>
             </div>
         </div>
@@ -143,6 +146,7 @@ import {
     articleBySlugQueryOptions,
     commentListQueryOptions,
 } from '~/shared/api/query-options/article'
+import dayjs from 'dayjs'
 
 definePageMeta({
     props: true,

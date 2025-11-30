@@ -1,6 +1,6 @@
 <template>
     <NuxtLink
-        to="/editor/{{ article.slug }}"
+        :to="`/editor/${article.slug}`"
         class="btn btn-sm btn-outline-secondary"
     >
         <i class="ion-edit"></i> Edit Article

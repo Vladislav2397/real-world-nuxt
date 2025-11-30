@@ -8,29 +8,30 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { Article } from '~/shared/api/contracts/article'
 import { articleListQueryOptions } from '~/shared/api/query-options/article'
-import { articleApi } from '~/shared/api/rest/article'
-
-const queryClient = useQueryClient()
-const deleteArticleMutation = useMutation({
-    mutationKey: ['deleteArticle'],
-    mutationFn: articleApi.delete,
-    onSuccess: async () => {
-        await queryClient.invalidateQueries(articleListQueryOptions())
-    },
-})
 
 const { article } = defineProps<{
     article: Pick<Article, 'slug'>
 }>()
 
+const queryClient = useQueryClient()
+const httpClient = useHttpClient()
+const deleteArticleMutation = useMutation({
+    mutationKey: ['delete-article'],
+    mutationFn: () =>
+        httpClient(`/api/articles/${article.slug}` as '/api/articles/:slug', {
+            method: 'DELETE',
+        }),
+    onSuccess: async () => {
+        await queryClient.invalidateQueries(articleListQueryOptions())
+    },
+})
+
 const emit = defineEmits<{
     deleted: []
 }>()
 
-function onClick() {
-    deleteArticleMutation.mutate({
-        slug: article.slug,
-    })
+async function onClick() {
+    await deleteArticleMutation.mutateAsync()
 
     emit('deleted')
 }

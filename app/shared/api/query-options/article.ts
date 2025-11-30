@@ -40,16 +40,14 @@ export const feedListQueryOptions = (
 export const articleBySlugQueryOptions = (
     params: MaybeRefOrGetter<GetArticleBySlugParams>
 ) => {
-    const httpClientPublic = useHttpClientPublic()
+    const httpClient = useHttpClient()
 
     const slug = computed(() => toValue(params).slug)
 
     return queryOptions({
         queryKey: ['article', slug],
         queryFn: () =>
-            httpClientPublic(
-                `/api/articles/${slug.value}` as '/api/articles/:slug'
-            ),
+            httpClient(`/api/articles/${slug.value}` as '/api/articles/:slug'),
     })
 }
 
