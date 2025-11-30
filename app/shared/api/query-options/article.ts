@@ -1,10 +1,9 @@
 import { queryOptions } from '@tanstack/vue-query'
-import {
-    articleApi,
-    type GetArticleBySlugParams,
-    type GetArticleListParams,
-    type GetCommentListParams,
-    type GetFeedListParams,
+import type {
+    GetArticleBySlugParams,
+    GetArticleListParams,
+    GetCommentListParams,
+    GetFeedListParams,
 } from '../rest/article'
 
 export const articleListQueryOptions = (
@@ -15,9 +14,26 @@ export const articleListQueryOptions = (
     const query = computed(() => toValue(params))
 
     return queryOptions({
-        queryKey: ['article-list', params],
-        queryFn: () =>
-            httpClientPublic('/api/articles', { query: query.value }),
+        queryKey: ['article-list', query],
+        queryFn: () => {
+            return httpClientPublic('/api/articles', { query: query.value })
+        },
+    })
+}
+
+export const feedListQueryOptions = (
+    params?: MaybeRefOrGetter<GetFeedListParams>
+) => {
+    const httpClient = useHttpClient()
+    const query = computed(() => toValue(params))
+
+    return queryOptions({
+        queryKey: ['feed-list', query],
+        queryFn: () => {
+            return httpClient('/api/articles/feed', {
+                query: query.value,
+            })
+        },
     })
 }
 

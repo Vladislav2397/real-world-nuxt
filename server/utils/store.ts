@@ -32,7 +32,7 @@ export const articles: Article[] = [
         title: 'How to train your dragon 2',
         description: 'So toothless',
         body: 'It takes a Jacobian',
-        tagList: ['dragons', 'training'],
+        tagList: ['dragons'],
         createdAt: '2016-02-18T03:22:56.637Z',
         updatedAt: '2016-02-18T03:48:35.824Z',
         authorId: 1,

@@ -30,17 +30,22 @@
                         </ul>
                     </div>
 
-                    <Article
-                        v-for="article in articles"
-                        :key="article.slug"
-                        :article="article"
-                    >
-                        <template #favorite-action>
-                            <ToggleFavoriteButton :article="article">
-                                &nbsp;{{ article.favoritesCount }}
-                            </ToggleFavoriteButton>
-                        </template>
-                    </Article>
+                    <template v-if="articles.length > 0">
+                        <Article
+                            v-for="article in articles"
+                            :key="article.slug"
+                            :article="article"
+                        >
+                            <template #favorite-action>
+                                <ToggleFavoriteButton :article="article">
+                                    &nbsp;{{ article.favoritesCount }}
+                                </ToggleFavoriteButton>
+                            </template>
+                        </Article>
+                    </template>
+                    <template v-else>
+                        <div>No articles are here... yet.</div>
+                    </template>
 
                     <ul class="pagination">
                         <li
@@ -84,18 +89,22 @@
 
 <script setup lang="ts">
 import { onServerPrefetch } from 'vue'
-import { useRouteQuery } from '@vueuse/router'
 import { useQuery } from '@tanstack/vue-query'
 import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
-import {
-    articleListQueryOptions,
-    tagListQueryOptions,
-} from '~/shared/api/query-options/article'
+import { tagListQueryOptions } from '~/shared/api/query-options/article'
+import { useArticleListModel } from '~/views/HomePage/model'
 
-const pages = computed(() => [1, 2])
-const currentPage = useRouteQuery('page', '1')
+const {
+    articles,
+    articlesSuspense,
+    pages,
+    currentPage,
+    currentTag,
+    currentType,
+} = useArticleListModel()
 
-const currentType = useRouteQuery('type', 'global')
+const token = useCookie('token', { default: () => '' })
+const isAuthorized = computed(() => !!token.value)
 
 const tabs = computed(() => {
     const arr = []
@@ -103,14 +112,14 @@ const tabs = computed(() => {
     if (isAuthorized.value) {
         arr.push({
             name: 'Your Feed',
-            isActive: false,
+            isActive: currentType.value === 'feed',
             route: { query: { type: 'feed' } },
         })
     }
 
     arr.push({
         name: 'Global Feed',
-        isActive: !currentTag.value,
+        isActive: currentType.value === 'global' && !currentTag.value,
         route: { query: { type: 'global' } },
     })
 
@@ -124,16 +133,6 @@ const tabs = computed(() => {
 
     return arr
 })
-
-const currentTag = useRouteQuery('tag', '')
-
-const token = useCookie('token', { default: () => '' })
-const isAuthorized = computed(() => !!token.value)
-
-const { data: articlesData, suspense: articlesSuspense } = useQuery(
-    articleListQueryOptions()
-)
-const articles = computed(() => articlesData.value?.articles ?? [])
 
 const { data: tagsData, suspense: tagsSuspense } = useQuery(
     tagListQueryOptions()
