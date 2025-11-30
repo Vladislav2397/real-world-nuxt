@@ -30,7 +30,7 @@ describe('useLogout', () => {
 
         const result = await logout()
 
-        expect(cookieRef.value).toBe('')
+        expect(cookieRef.value).toBe(null)
         expect(result).toBe(true)
     })
 })

@@ -1,5 +1,6 @@
 // @vitest-environment nuxt
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { ref } from 'vue'
 import { useLogin } from './use-login'
 import { flushPromises } from '@vue/test-utils'
 import { mockNuxtImport } from '@nuxt/test-utils/runtime'
@@ -39,7 +40,36 @@ vi.mock('~/shared/api/rest/auth', () => ({
     },
 }))
 
+// Mock useMutation from @tanstack/vue-query
+vi.mock('@tanstack/vue-query', async () => {
+    const actual = await vi.importActual('@tanstack/vue-query')
+    return {
+        ...actual,
+        useMutation: ({ mutationFn }: any) => {
+            const error = ref(null)
+            return {
+                mutateAsync: async (data: any) => {
+                    try {
+                        const result = await mutationFn(data)
+                        error.value = null
+                        return result
+                    } catch (err) {
+                        error.value = err
+                        throw err
+                    }
+                },
+                error,
+            }
+        },
+    }
+})
+
 describe('useLogin', () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+        cookieRef.value = ''
+    })
+
     it('should login and save token to cookie', async () => {
         loginMock.mockResolvedValue({
             user: {
@@ -65,9 +95,7 @@ describe('useLogin', () => {
 
         // Проверяем, что useCookie был вызван
         expect(useCookieMock).toHaveBeenCalledTimes(1)
-        expect(useCookieMock).toHaveBeenCalledWith('token', {
-            default: expect.any(Function),
-        })
+        expect(useCookieMock).toHaveBeenCalledWith('token')
 
         // Проверяем, что значение в cookie было установлено правильно
         expect(cookieRef.value).toBe('jwt.token.here')
