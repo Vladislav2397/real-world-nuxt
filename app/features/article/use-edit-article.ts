@@ -13,6 +13,13 @@ export const useEditArticle = (slug: string) => {
         queryKey: ['article', slug],
         queryFn: () => articleApi.getBySlug({ slug }),
     })
+
+    const dto = ref<EditArticleDto>({
+        title: '',
+        description: '',
+        body: '',
+        tagList: [],
+    })
     watch(articleData, newVal => {
         if (newVal) {
             dto.value.title = newVal.article.title
@@ -21,27 +28,20 @@ export const useEditArticle = (slug: string) => {
             dto.value.tagList = newVal.article.tagList
         }
     })
-
-    const dto = ref<EditArticleDto>({
-        title: '',
-        description: '',
-        body: '',
-        tagList: [],
-    })
+    const httpClient = useHttpClient()
     const { mutateAsync: editArticle } = useMutation({
-        mutationKey: ['edit-article'],
-        mutationFn: articleApi.edit,
+        mutationKey: ['edit-article', slug],
+        mutationFn: () =>
+            httpClient(`/api/articles/${slug}` as '/api/articles/:slug', {
+                method: 'PUT',
+                body: {
+                    article: dto.value,
+                },
+            }),
     })
 
-    const handleSubmit = async (e: Event) => {
-        const formData = new FormData(e.target as HTMLFormElement)
-
-        const title = formData.get('title') as string
-        const description = formData.get('description') as string
-        const body = formData.get('body') as string
-        const tagList = formData.get('tagList') as unknown as string[]
-
-        const result = await editArticle({ title, description, body, tagList })
+    const handleSubmit = async () => {
+        const result = await editArticle()
 
         console.log(result)
     }

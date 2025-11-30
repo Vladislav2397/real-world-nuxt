@@ -15,8 +15,10 @@ export const articleListQueryOptions = (
 
     return queryOptions({
         queryKey: query.value ? ['article-list', query] : ['article-list'],
-        queryFn: () => {
-            return httpClient('/api/articles', { query: query.value })
+        queryFn: async () => {
+            return await (httpClient as any)('/api/articles', {
+                query: query.value,
+            })
         },
     })
 }
@@ -65,23 +67,23 @@ export const articleFeedListQueryOptions = (
 }
 
 export const tagListQueryOptions = () => {
-    const httpClientPublic = useHttpClientPublic()
+    const httpClient = useHttpClient()
 
     return queryOptions({
         queryKey: ['tag-list'],
-        queryFn: () => httpClientPublic('/api/tags'),
+        queryFn: () => httpClient('/api/tags'),
     })
 }
 
 export const commentListQueryOptions = (
     params: MaybeRefOrGetter<GetCommentListParams>
 ) => {
-    const httpClientPublic = useHttpClientPublic()
+    const httpClient = useHttpClient()
 
     const slug = computed(() => toValue(params).slug)
 
     return queryOptions({
         queryKey: ['comment-list', slug],
-        queryFn: () => httpClientPublic(`/api/articles/${slug.value}/comments`),
+        queryFn: () => httpClient(`/api/articles/${slug.value}/comments`),
     })
 }

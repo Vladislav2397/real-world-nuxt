@@ -1,15 +1,17 @@
-import { httpClient } from '../http-client'
-
 export type LoginDto = {
     email: string
     password: string
 }
 const loginRequest = async (data: LoginDto) => {
-    const result = await httpClient.post('/api/users/login', {
-        user: data,
+    const httpClient = useHttpClient()
+    const result = await httpClient('/api/users/login', {
+        method: 'POST',
+        body: {
+            user: data,
+        },
     })
 
-    return result.data
+    return result
 }
 
 export type RegisterDto = {
@@ -18,17 +20,22 @@ export type RegisterDto = {
     password: string
 }
 const registerRequest = async (data: RegisterDto) => {
-    const result = await httpClient.post('/api/users', {
-        user: data,
+    const httpClient = useHttpClient()
+    const result = await httpClient('/api/users', {
+        method: 'POST',
+        body: {
+            user: data,
+        },
     })
 
-    return result.data
+    return result
 }
 
 const getCurrentUserRequest = async () => {
-    const result = await httpClient.get('/api/user')
+    const httpClient = useHttpClient()
+    const result = await httpClient('/api/user')
 
-    return result.data
+    return result
 }
 
 export type UpdateUserDto = {
@@ -39,11 +46,15 @@ export type UpdateUserDto = {
     image?: string
 }
 const updateUserRequest = async (data: UpdateUserDto) => {
-    const result = await httpClient.put('/api/user', {
-        user: data,
+    const httpClient = useHttpClient()
+    const result = await httpClient('/api/user', {
+        method: 'PUT',
+        body: {
+            user: data,
+        },
     })
 
-    return result.data
+    return result
 }
 
 export const authApi = {

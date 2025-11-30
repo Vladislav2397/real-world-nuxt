@@ -1,5 +1,3 @@
-import { httpClient } from '../http-client'
-
 export type GetArticleListParams = {
     tag?: string
     author?: string
@@ -8,44 +6,51 @@ export type GetArticleListParams = {
     offset?: number
 }
 const getArticleListRequest = async (params?: GetArticleListParams) => {
-    const response = await $fetch('/api/articles', { query: params })
+    const httpClient = useHttpClient()
+    const response = await httpClient('/api/articles', {
+        query: params,
+    })
 
     return response
 }
 
 export type GetArticleBySlugParams = { slug: string }
 const getArticleBySlugRequest = async (params: GetArticleBySlugParams) => {
-    const response = await httpClient.get(`/api/articles/${params.slug}`)
+    const httpClient = useHttpClient()
+    const response = await httpClient(
+        `/api/articles/${params.slug}` as '/api/articles/:slug'
+    )
 
-    return response.data
+    return response
 }
 
 export type GetCommentListParams = { slug: string }
 const getCommentListRequest = async (params: GetCommentListParams) => {
-    const response = await httpClient.get(
-        `/api/articles/${params.slug}/comments`
-    )
+    const httpClient = useHttpClient()
+    const response = await httpClient(`/api/articles/${params.slug}/comments`)
 
-    return response.data
+    return response
 }
 
 const createCommentRequest = async (params: { slug: string; body: string }) => {
-    const response = await httpClient.post(
-        `/api/articles/${params.slug}/comments`,
-        {
+    const httpClient = useHttpClient()
+    const response = await httpClient(`/api/articles/${params.slug}/comments`, {
+        method: 'POST',
+        body: {
             comment: {
                 body: params.body,
             },
-        }
-    )
+        },
+    })
 
-    return response.data
+    return response
 }
 
 const deleteCommentRequest = async (params: { slug: string; id: number }) => {
-    await httpClient.delete(
-        `/api/articles/${params.slug}/comments/${params.id}`
-    )
+    const httpClient = useHttpClient()
+    await httpClient(`/api/articles/${params.slug}/comments/${params.id}`, {
+        method: 'DELETE',
+    })
 }
 
 const createArticleRequest = async (data: {
@@ -54,11 +59,15 @@ const createArticleRequest = async (data: {
     body: string
     tagList: string[]
 }) => {
-    const response = await httpClient.post('/api/articles', {
-        article: data,
+    const httpClient = useHttpClient()
+    const response = await httpClient('/api/articles', {
+        method: 'POST',
+        body: {
+            article: data,
+        },
     })
 
-    return response.data
+    return response
 }
 
 const editArticleRequest = async (params: {
@@ -69,44 +78,57 @@ const editArticleRequest = async (params: {
     tagList?: string[]
 }) => {
     const { slug, ...articleData } = params
-    const response = await httpClient.put(`/api/articles/${slug}`, {
-        article: articleData,
+    const httpClient = useHttpClient()
+    const response = await (httpClient as any)(`/api/articles/${slug}`, {
+        method: 'PUT',
+        body: {
+            article: articleData,
+        },
     })
 
-    return response.data
+    return response
 }
 
 const deleteArticleRequest = async (params: { slug: string }) => {
-    await httpClient.delete(`/api/articles/${params.slug}`)
+    const httpClient = useHttpClient()
+    await (httpClient as any)(`/api/articles/${params.slug}`, {
+        method: 'DELETE',
+    })
 }
 
 const favoriteArticleRequest = async (params: { slug: string }) => {
-    const response = await httpClient.post(
-        `/api/articles/${params.slug}/favorite`
-    )
+    const httpClient = useHttpClient()
+    const response = await httpClient(`/api/articles/${params.slug}/favorite`, {
+        method: 'POST',
+    })
 
-    return response.data
+    return response
 }
 
 const unfavoriteArticleRequest = async (params: { slug: string }) => {
-    const response = await httpClient.delete(
-        `/api/articles/${params.slug}/favorite`
-    )
+    const httpClient = useHttpClient()
+    const response = await httpClient(`/api/articles/${params.slug}/favorite`, {
+        method: 'DELETE',
+    })
 
-    return response.data
+    return response
 }
 
 export type GetFeedListParams = { limit?: number; offset?: number }
 const getFeedListRequest = async (params?: GetFeedListParams) => {
-    const response = await httpClient.get('/api/articles/feed', { params })
+    const httpClient = useHttpClient()
+    const response = await httpClient('/api/articles/feed', {
+        query: params,
+    })
 
-    return response.data
+    return response
 }
 
 const getTagListRequest = async () => {
-    const response = await httpClient.get('/api/tags')
+    const httpClient = useHttpClient()
+    const response = await httpClient('/api/tags')
 
-    return response.data
+    return response
 }
 
 export const articleApi = {

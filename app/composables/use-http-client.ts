@@ -1,4 +1,5 @@
 import { useAuthToken } from '~/features/auth/use-auth-token'
+import { ApiError } from '~/shared/api/errors'
 
 const useHttpClient = () => {
     const token = useAuthToken()
@@ -19,6 +20,15 @@ const useHttpClient = () => {
                     Authorization: `Bearer ${token.value}`,
                 } as unknown as Headers
             }
+        },
+        onResponseError({ response }) {
+            if (response.status && response._data?.errors) {
+                throw new ApiError(
+                    response.status,
+                    response._data.errors
+                )
+            }
+            throw response._data || new Error('Request failed')
         },
     })
 

@@ -1,25 +1,32 @@
-import { httpClient } from '../http-client'
-
 const getProfileByUsernameRequest = async (params: { username: string }) => {
-    const response = await httpClient.get(`/api/profiles/${params.username}`)
+    const httpClient = useHttpClient()
+    const response = await httpClient(`/api/profiles/${params.username}`)
 
-    return response.data
+    return response
 }
 
 const followUserRequest = async (params: { username: string }) => {
-    const response = await httpClient.post(
-        `/api/profiles/${params.username}/follow`
+    const httpClient = useHttpClient()
+    const response = await httpClient(
+        `/api/profiles/${params.username}/follow`,
+        {
+            method: 'POST',
+        }
     )
 
-    return response.data
+    return response
 }
 
 const unfollowUserRequest = async (params: { username: string }) => {
-    const response = await httpClient.delete(
-        `/api/profiles/${params.username}/follow`
+    const httpClient = useHttpClient()
+    const response = await httpClient(
+        `/api/profiles/${params.username}/follow`,
+        {
+            method: 'DELETE',
+        }
     )
 
-    return response.data
+    return response
 }
 
 export const profileApi = {

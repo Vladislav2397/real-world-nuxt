@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/vue-query'
-import type { ApiError } from '~/shared/api/http-client'
+import type { ApiError } from '~/shared/api/errors'
 import { authApi } from '~/shared/api/rest/auth'
 import { useAuthToken } from './use-auth-token'
 
