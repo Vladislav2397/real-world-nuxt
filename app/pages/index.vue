@@ -12,22 +12,19 @@
                 <div class="col-md-9">
                     <div class="feed-toggle">
                         <ul class="nav nav-pills outline-active">
-                            <li v-if="isAuthorized" class="nav-item">
-                                <NuxtLink class="nav-link" to="/">
-                                    Your Feed
-                                </NuxtLink>
-                            </li>
-                            <li class="nav-item">
-                                <NuxtLink class="nav-link active" to="/">
-                                    Global Feed
-                                </NuxtLink>
-                            </li>
-                            <li v-if="currentTag" class="nav-item">
+                            <li
+                                v-for="tab in tabs"
+                                :key="tab.name"
+                                :class="['nav-item']"
+                            >
                                 <NuxtLink
-                                    class="nav-link"
-                                    :to="{ query: { tag: currentTag } }"
+                                    :class="[
+                                        'nav-link',
+                                        tab.isActive && 'active',
+                                    ]"
+                                    :to="tab.route"
                                 >
-                                    {{ currentTag }}
+                                    {{ tab.name }}
                                 </NuxtLink>
                             </li>
                         </ul>
@@ -89,12 +86,44 @@
 import { onServerPrefetch } from 'vue'
 import { useRouteQuery } from '@vueuse/router'
 import { useQuery } from '@tanstack/vue-query'
-import { articleApi } from '~/shared/api/rest/article'
 import ToggleFavoriteButton from '~/features/article/ToggleFavoriteButton.vue'
-import { articleListQueryOptions } from '~/shared/api/query-options/article'
+import {
+    articleListQueryOptions,
+    tagListQueryOptions,
+} from '~/shared/api/query-options/article'
 
 const pages = computed(() => [1, 2])
 const currentPage = useRouteQuery('page', '1')
+
+const currentType = useRouteQuery('type', 'global')
+
+const tabs = computed(() => {
+    const arr = []
+
+    if (isAuthorized.value) {
+        arr.push({
+            name: 'Your Feed',
+            isActive: false,
+            route: { query: { type: 'feed' } },
+        })
+    }
+
+    arr.push({
+        name: 'Global Feed',
+        isActive: !currentTag.value,
+        route: { query: { type: 'global' } },
+    })
+
+    if (currentTag.value) {
+        arr.push({
+            name: currentTag.value,
+            route: { query: { type: 'tag', tag: currentTag.value } },
+            isActive: true,
+        })
+    }
+
+    return arr
+})
 
 const currentTag = useRouteQuery('tag', '')
 
@@ -106,10 +135,9 @@ const { data: articlesData, suspense: articlesSuspense } = useQuery(
 )
 const articles = computed(() => articlesData.value?.articles ?? [])
 
-const { data: tagsData, suspense: tagsSuspense } = useQuery({
-    queryKey: ['tag-list'],
-    queryFn: articleApi.getTagList,
-})
+const { data: tagsData, suspense: tagsSuspense } = useQuery(
+    tagListQueryOptions()
+)
 const tags = computed(() => tagsData.value?.tags ?? [])
 
 onServerPrefetch(async () => {

@@ -20,7 +20,8 @@ const getArticleBySlugRequest = async (params: GetArticleBySlugParams) => {
     return response.data
 }
 
-const getCommentListRequest = async (params: { slug: string }) => {
+export type GetCommentListParams = { slug: string }
+const getCommentListRequest = async (params: GetCommentListParams) => {
     const response = await httpClient.get(
         `/api/articles/${params.slug}/comments`
     )

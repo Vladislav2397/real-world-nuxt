@@ -5,30 +5,19 @@
 </template>
 
 <script lang="ts" setup>
-// import { ApiError, httpClient } from './shared/api/http-client'
+import { useQueryClient } from '@tanstack/vue-query'
+import { useAuthToken } from './features/auth/use-auth-token'
+import { getCurrentUserQueryOptions } from './shared/api/query-options/auth'
 
-// const token = useCookie('token', { default: () => '' })
+const queryClient = useQueryClient()
 
-// const isAuthorized = computed(() => !!token.value)
+const token = useAuthToken()
 
-// const { suspense: currentUserSuspense } = useQuery({
-//     ...getCurrentUserQueryOptions(),
-//     enabled: isAuthorized.value,
-// })
+onServerPrefetch(async () => {
+    if (!token.value) return
 
-// onServerPrefetch(async () => {
-//     if (!isAuthorized.value) return
-
-//     try {
-//         const result = await httpClient.get('/api/user')
-
-//         console.log(result.data)
-//     } catch (e) {
-//         if (!(e instanceof ApiError)) return
-
-//         console.log('e.code', e.code)
-//     }
-// })
+    await queryClient.fetchQuery(getCurrentUserQueryOptions())
+})
 </script>
 
 <style lang="scss" src="./app.scss" />

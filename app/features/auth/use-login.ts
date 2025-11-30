@@ -1,7 +1,7 @@
-// @vitest-environment nuxt
 import { useMutation } from '@tanstack/vue-query'
 import type { ApiError } from '~/shared/api/http-client'
 import { authApi } from '~/shared/api/rest/auth'
+import { useAuthToken } from './use-auth-token'
 
 export const useLogin = () => {
     const loginMutation = useMutation<
@@ -21,7 +21,7 @@ export const useLogin = () => {
         mutationFn: authApi.login,
     })
 
-    const token = useCookie('token', { default: () => '' })
+    const token = useAuthToken()
 
     async function login(data: { email: string; password: string }) {
         const result = await loginMutation.mutateAsync(data)
