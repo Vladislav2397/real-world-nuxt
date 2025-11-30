@@ -5,7 +5,6 @@ const useHttpClient = () => {
     const token = useAuthToken()
 
     const httpClient = $fetch.create({
-        baseURL: 'http://localhost:5910',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -23,10 +22,7 @@ const useHttpClient = () => {
         },
         onResponseError({ response }) {
             if (response.status && response._data?.errors) {
-                throw new ApiError(
-                    response.status,
-                    response._data.errors
-                )
+                throw new ApiError(response.status, response._data.errors)
             }
             throw response._data || new Error('Request failed')
         },
