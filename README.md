@@ -1,4 +1,4 @@
-# Nuxt Minimal Starter
+# Real World Nuxt
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
@@ -73,3 +73,9 @@ bun run preview
 ```
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+
+---
+
+## Resources
+
+[database diagram](https://dbdiagram.io/d/Real-world-692dd29ad6676488ba1f2cb3)

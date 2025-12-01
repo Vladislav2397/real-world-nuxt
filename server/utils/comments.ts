@@ -1,18 +1,12 @@
-import { comments, getNextCommentId } from './store'
+import { db } from './db'
 import type { Comment } from './types'
 
 export const findCommentById = (id: number): Comment | undefined => {
-    return comments.find(comment => comment.id === id)
+    return db.comment.findById(id)
 }
 
 export const getCommentsByArticleId = (articleId: number): Comment[] => {
-    return comments
-        .filter(comment => comment.articleId === articleId)
-        .sort(
-            (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
-        )
+    return db.comment.getByArticleId(articleId)
 }
 
 export const createComment = (data: {
@@ -20,25 +14,9 @@ export const createComment = (data: {
     articleId: number
     authorId: number
 }): Comment => {
-    const now = new Date().toISOString()
-
-    const comment: Comment = {
-        id: getNextCommentId(),
-        body: data.body,
-        createdAt: now,
-        updatedAt: now,
-        articleId: data.articleId,
-        authorId: data.authorId,
-    }
-
-    comments.push(comment)
-    return comment
+    return db.comment.create(data)
 }
 
 export const deleteComment = (id: number): boolean => {
-    const index = comments.findIndex(comment => comment.id === id)
-    if (index === -1) return false
-
-    comments.splice(index, 1)
-    return true
+    return db.comment.delete(id)
 }

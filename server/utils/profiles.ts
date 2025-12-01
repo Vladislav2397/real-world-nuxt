@@ -1,40 +1,22 @@
-import { follows } from './store'
+import { db } from './db'
 
 export const isFollowing = (
     followerId: number,
     followingId: number
 ): boolean => {
-    return follows.some(
-        follow =>
-            follow.followerId === followerId &&
-            follow.followingId === followingId
-    )
+    return db.follow.isFollowing(followerId, followingId)
 }
 
 export const followUser = (
     followerId: number,
     followingId: number
 ): boolean => {
-    if (followerId === followingId) return false
-
-    const exists = isFollowing(followerId, followingId)
-    if (exists) return false
-
-    follows.push({ followerId, followingId })
-    return true
+    return db.follow.follow(followerId, followingId)
 }
 
 export const unfollowUser = (
     followerId: number,
     followingId: number
 ): boolean => {
-    const index = follows.findIndex(
-        follow =>
-            follow.followerId === followerId &&
-            follow.followingId === followingId
-    )
-    if (index === -1) return false
-
-    follows.splice(index, 1)
-    return true
+    return db.follow.unfollow(followerId, followingId)
 }

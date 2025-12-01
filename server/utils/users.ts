@@ -1,20 +1,20 @@
-import { users, getNextUserId } from './store'
+import { db } from './db'
 import type { User } from './types'
 
 export const findUserByEmail = (email: string): User | undefined => {
-    return users.find(user => user.email === email)
+    return db.user.findByEmail(email)
 }
 
 export const findUserByUsername = (username: string): User | undefined => {
-    return users.find(user => user.username === username)
+    return db.user.findByUsername(username)
 }
 
 export const findUserById = (id: number): User | undefined => {
-    return users.find(user => user.id === id)
+    return db.user.findById(id)
 }
 
 export const findUserByToken = (token: string): User | undefined => {
-    return users.find(user => user.token === token)
+    return db.user.findByToken(token)
 }
 
 export const createUser = (data: {
@@ -22,17 +22,7 @@ export const createUser = (data: {
     username: string
     password: string
 }): User => {
-    const user: User = {
-        id: getNextUserId(),
-        email: data.email,
-        username: data.username,
-        password: data.password,
-        bio: null,
-        image: null,
-        token: `jwt.token.${data.username}.${Date.now()}`,
-    }
-    users.push(user)
-    return user
+    return db.user.create(data)
 }
 
 export const updateUser = (
@@ -45,23 +35,12 @@ export const updateUser = (
         image?: string
     }
 ): User | null => {
-    const user = findUserById(userId)
-    if (!user) return null
-
-    if (data.email !== undefined) user.email = data.email
-    if (data.username !== undefined) user.username = data.username
-    if (data.password !== undefined) user.password = data.password
-    if (data.bio !== undefined) user.bio = data.bio
-    if (data.image !== undefined) user.image = data.image
-
-    return user
+    return db.user.update(userId, data)
 }
 
 export const authenticateUser = (
     email: string,
     password: string
 ): User | null => {
-    const user = findUserByEmail(email)
-    if (!user || user.password !== password) return null
-    return user
+    return db.user.authenticate(email, password)
 }

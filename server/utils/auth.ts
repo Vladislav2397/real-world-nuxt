@@ -1,4 +1,4 @@
-// import { getHeader } from 'h3'
+import { getHeader } from 'h3'
 import type { EventHandlerRequest, H3Event } from 'h3'
 import { findUserByToken } from './users'
 
