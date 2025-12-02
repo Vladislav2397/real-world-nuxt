@@ -1,7 +1,8 @@
-import { useMutation } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { ApiError } from '~/shared/api/errors'
 import { authApi } from '~/shared/api/rest/auth'
 import { useAuthToken } from './use-auth-token'
+import { getCurrentUserQueryOptions } from '~/shared/api/query-options/auth'
 
 export const useLogin = () => {
     const loginMutation = useMutation<
@@ -23,10 +24,13 @@ export const useLogin = () => {
 
     const token = useAuthToken()
 
+    const queryClient = useQueryClient()
     async function login(data: { email: string; password: string }) {
         const result = await loginMutation.mutateAsync(data)
 
         token.value = result.user.token
+
+        await queryClient.fetchQuery(getCurrentUserQueryOptions())
 
         return result.user
     }

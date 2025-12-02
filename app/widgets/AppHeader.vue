@@ -76,19 +76,10 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
-import { getCurrentUserQueryOptions } from '~/shared/api/query-options/auth'
-
-// import { useViewer } from '~/entities/viewer/model'
+import { useViewer } from '~/entities/viewer/model'
 
 const token = useCookie('token', { default: () => '' })
 const isAuthenticated = computed(() => !!token.value)
 
-const { data: userData, suspense: userSuspense } = useQuery(
-    getCurrentUserQueryOptions()
-)
-const viewer = computed(() => userData.value?.user ?? null)
-
-onServerPrefetch(userSuspense)
-// const { viewer } = useViewer()
+const { viewer } = useViewer()
 </script>
