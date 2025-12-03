@@ -19,4 +19,92 @@ model User {
     image     String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    articles  Article[]
+    favorites Favorite[]
+    followers Follow[]   @relation("UserFollowers")
+    following Follow[]   @relation("UserFollowing")
+    comments  Comment[]
+    tokens    Token[]
+}
+
+model Token {
+    id        Int      @id @default(autoincrement())
+    token     String   @unique
+    expiresAt DateTime
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    userId Int
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([token])
+    @@index([expiresAt])
+}
+
+model Article {
+    id          Int      @id @default(autoincrement())
+    slug        String   @unique
+    title       String
+    description String
+    body        String
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    authorId  Int
+    author    User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    comments  Comment[]
+    favorites Favorite[]
+
+    @@index([authorId])
+    @@index([slug])
+}
+
+model Comment {
+    id        Int      @id @default(autoincrement())
+    body      String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    articleId Int
+    article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+    userId Int
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([articleId])
+    @@index([userId])
+}
+
+model Favorite {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    articleId Int
+    article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+    userId Int
+    user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, articleId])
+    @@index([userId])
+    @@index([articleId])
+}
+
+model Follow {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    followerId Int
+    follower   User @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+
+    followingId Int
+    following   User @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+    @@unique([followerId, followingId])
+    @@index([followerId])
+    @@index([followingId])
 }

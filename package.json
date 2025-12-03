@@ -12,7 +12,10 @@
         "test": "vitest",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
-        "postinstall": "nuxt prepare"
+        "postinstall": "nuxt prepare",
+        "db:seed": "npx prisma db seed",
+        "db:migrate": "npx prisma migrate dev",
+        "prisma:generate": "npx prisma generate"
     },
     "dependencies": {
         "@nuxt/eslint": "^1.10.0",
