@@ -3,7 +3,7 @@ import { getArticles } from '../../utils/articles'
 import { transformArticlePreview } from '../../utils/transform'
 import { getCurrentUser } from '../../utils/auth'
 
-export default defineEventHandler(event => {
+export default defineEventHandler(async event => {
     const query = getQuery(event)
     const currentUser = getCurrentUser(event)
 
