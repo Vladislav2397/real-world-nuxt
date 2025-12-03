@@ -1,10 +1,9 @@
 import { getRouterParam } from 'h3'
-import { getCurrentUser } from '../../utils/auth'
-import { findArticleBySlug, updateArticle } from '../../utils/articles'
+import { authService, articleService } from '../../services'
 import { transformArticle } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -22,7 +21,7 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const article = findArticleBySlug(slug)
+    const article = articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -40,7 +39,7 @@ export default defineEventHandler(async event => {
 
     const body = await readBody(event)
 
-    const updatedArticle = updateArticle(slug, {
+    const updatedArticle = articleService.updateArticle(slug, {
         title: body?.article?.title,
         description: body?.article?.description,
         body: body?.article?.body,

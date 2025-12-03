@@ -1,9 +1,8 @@
-import { getCurrentUser } from '../../utils/auth'
-import { createArticle } from '../../utils/articles'
+import { authService, articleService } from '../../services'
 import { transformArticle } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -25,7 +24,7 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const article = createArticle({
+    const article = articleService.createArticle({
         title: body.article.title,
         description: body.article.description,
         body: body.article.body,

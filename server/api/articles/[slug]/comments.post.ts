@@ -1,11 +1,9 @@
 import { getRouterParam } from 'h3'
-import { getCurrentUser } from '../../../utils/auth'
-import { findArticleBySlug } from '../../../utils/articles'
-import { createComment } from '../../../utils/comments'
+import { authService, articleService, commentService } from '../../../services'
 import { transformComment } from '../../../utils/transform'
 
 export default defineEventHandler(async event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -23,7 +21,7 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const article = findArticleBySlug(slug)
+    const article = articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -41,7 +39,7 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const comment = createComment({
+    const comment = commentService.createComment({
         body: body.comment.body,
         articleId: article.id,
         authorId: currentUser.id,

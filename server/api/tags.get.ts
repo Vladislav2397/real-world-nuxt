@@ -1,7 +1,7 @@
-import { getAllTags } from '../utils/articles'
+import { articleService } from '../services'
 
 export default defineEventHandler(_event => {
-    const tags = getAllTags()
+    const tags = articleService.getAllTags()
 
     return {
         tags,

@@ -1,11 +1,9 @@
 import { getRouterParam } from 'h3'
-import { getCurrentUser } from '../../../utils/auth'
-import { findUserByUsername } from '../../../utils/users'
-import { unfollowUser } from '../../../utils/profiles'
+import { authService, userService, profileService } from '../../../services'
 import { transformProfile } from '../../../utils/transform'
 
 export default defineEventHandler(event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -23,7 +21,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const user = findUserByUsername(username)
+    const user = userService.findUserByUsername(username)
 
     if (!user) {
         throw createError({
@@ -32,7 +30,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    unfollowUser(currentUser.id, user.id)
+    profileService.unfollowUser(currentUser.id, user.id)
 
     return {
         profile: transformProfile(user, currentUser.id),

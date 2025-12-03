@@ -1,9 +1,8 @@
 import { getRouterParam } from 'h3'
-import { getCurrentUser } from '../../../../utils/auth'
-import { findCommentById, deleteComment } from '../../../../utils/comments'
+import { authService, commentService } from '../../../../services'
 
 export default defineEventHandler(event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -30,7 +29,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const comment = findCommentById(commentId)
+    const comment = commentService.findCommentById(commentId)
 
     if (!comment) {
         throw createError({
@@ -46,7 +45,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const deleted = deleteComment(commentId)
+    const deleted = commentService.deleteComment(commentId)
 
     if (!deleted) {
         throw createError({

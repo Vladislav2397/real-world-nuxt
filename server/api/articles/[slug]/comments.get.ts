@@ -1,12 +1,10 @@
 import { getRouterParam } from 'h3'
-import { findArticleBySlug } from '../../../utils/articles'
-import { getCommentsByArticleId } from '../../../utils/comments'
+import { articleService, commentService, authService } from '../../../services'
 import { transformComment } from '../../../utils/transform'
-import { getCurrentUser } from '../../../utils/auth'
 
 export default defineEventHandler(event => {
     const slug = getRouterParam(event, 'slug')
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!slug) {
         throw createError({
@@ -15,7 +13,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const article = findArticleBySlug(slug)
+    const article = articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -24,7 +22,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const comments = getCommentsByArticleId(article.id)
+    const comments = commentService.getCommentsByArticleId(article.id)
 
     return {
         comments: comments.map(comment =>

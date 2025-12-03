@@ -1,11 +1,10 @@
 import { getQuery } from 'h3'
-import { getArticles } from '../../utils/articles'
+import { articleService, authService } from '../../services'
 import { transformArticlePreview } from '../../utils/transform'
-import { getCurrentUser } from '../../utils/auth'
 
 export default defineEventHandler(async event => {
     const query = getQuery(event)
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     const filters = {
         tag: query.tag as string | undefined,
@@ -15,7 +14,7 @@ export default defineEventHandler(async event => {
         offset: query.offset ? Number(query.offset) : undefined,
     }
 
-    const { articles, articlesCount } = getArticles(filters)
+    const { articles, articlesCount } = articleService.getArticles(filters)
 
     return {
         articles: articles.map(article =>

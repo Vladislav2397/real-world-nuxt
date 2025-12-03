@@ -1,11 +1,10 @@
 import { getRouterParam } from 'h3'
-import { findUserByUsername } from '../../utils/users'
+import { userService, authService } from '../../services'
 import { transformProfile } from '../../utils/transform'
-import { getCurrentUser } from '../../utils/auth'
 
 export default defineEventHandler(event => {
     const username = getRouterParam(event, 'username')
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!username) {
         throw createError({
@@ -14,7 +13,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const user = findUserByUsername(username)
+    const user = userService.findUserByUsername(username)
 
     if (!user) {
         throw createError({

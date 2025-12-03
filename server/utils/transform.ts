@@ -1,7 +1,5 @@
 import type { User, Article, Comment } from './types'
-import { findUserById } from './users'
-import { isArticleFavorited } from './articles'
-import { isFollowing } from './profiles'
+import { userService, articleService, profileService } from '../services'
 
 export const transformUser = (user: User) => {
     return {
@@ -20,13 +18,13 @@ export const transformProfile = (user: User, currentUserId?: number) => {
         image: user.image,
         following:
             currentUserId !== undefined
-                ? isFollowing(currentUserId, user.id)
+                ? profileService.isFollowing(currentUserId, user.id)
                 : false,
     }
 }
 
 export const transformArticle = (article: Article, currentUserId?: number) => {
-    const author = findUserById(article.authorId)
+    const author = userService.findUserById(article.authorId)
     if (!author) {
         throw new Error(`Author with id ${article.authorId} not found`)
     }
@@ -41,7 +39,7 @@ export const transformArticle = (article: Article, currentUserId?: number) => {
         updatedAt: article.updatedAt,
         favorited:
             currentUserId !== undefined
-                ? isArticleFavorited(article.id, currentUserId)
+                ? articleService.isArticleFavorited(article.id, currentUserId)
                 : false,
         favoritesCount: article.favoritesCount,
         author: transformProfile(author, currentUserId),
@@ -52,7 +50,7 @@ export const transformArticlePreview = (
     article: Article,
     currentUserId?: number
 ) => {
-    const author = findUserById(article.authorId)
+    const author = userService.findUserById(article.authorId)
     if (!author) {
         throw new Error(`Author with id ${article.authorId} not found`)
     }
@@ -67,14 +65,14 @@ export const transformArticlePreview = (
         favoritesCount: article.favoritesCount,
         favorited:
             currentUserId !== undefined
-                ? isArticleFavorited(article.id, currentUserId)
+                ? articleService.isArticleFavorited(article.id, currentUserId)
                 : false,
         author: transformProfile(author, currentUserId),
     }
 }
 
 export const transformComment = (comment: Comment, currentUserId?: number) => {
-    const author = findUserById(comment.authorId)
+    const author = userService.findUserById(comment.authorId)
     if (!author) {
         throw new Error(`Author with id ${comment.authorId} not found`)
     }

@@ -1,10 +1,9 @@
 import { getRouterParam } from 'h3'
-import { getCurrentUser } from '../../../utils/auth'
-import { findArticleBySlug, removeFavorite } from '../../../utils/articles'
+import { authService, articleService } from '../../../services'
 import { transformArticle } from '../../../utils/transform'
 
 export default defineEventHandler(event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -22,7 +21,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const article = findArticleBySlug(slug)
+    const article = articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -31,7 +30,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const isSuccess = removeFavorite(article.id, currentUser.id)
+    const isSuccess = articleService.removeFavorite(article.id, currentUser.id)
 
     if (!isSuccess) {
         throw createError({

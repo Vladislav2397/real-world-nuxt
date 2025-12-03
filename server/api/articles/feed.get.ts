@@ -1,10 +1,9 @@
 import { getQuery } from 'h3'
-import { getCurrentUser } from '../../utils/auth'
-import { getFeedArticles } from '../../utils/articles'
+import { authService, articleService } from '../../services'
 import { transformArticlePreview } from '../../utils/transform'
 
 export default defineEventHandler(event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -17,7 +16,7 @@ export default defineEventHandler(event => {
     const limit = query.limit ? Number(query.limit) : undefined
     const offset = query.offset ? Number(query.offset) : undefined
 
-    const { articles, articlesCount } = getFeedArticles(
+    const { articles, articlesCount } = articleService.getFeedArticles(
         currentUser.id,
         limit,
         offset

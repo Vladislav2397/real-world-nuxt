@@ -1,4 +1,4 @@
-import { authenticateUser } from '../../utils/users'
+import { userService } from '../../services'
 import { transformUser } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
@@ -20,7 +20,7 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const user = authenticateUser(body.user.email, body.user.password)
+    const user = userService.authenticateUser(body.user.email, body.user.password)
 
     if (!user) {
         throw createError({

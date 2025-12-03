@@ -1,4 +1,4 @@
-import { createUser, findUserByEmail, findUserByUsername } from '../../utils/users'
+import { userService } from '../../services'
 import { transformUser } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
@@ -12,21 +12,21 @@ export default defineEventHandler(async event => {
     }
 
     // Проверяем, не существует ли уже пользователь с таким email или username
-    if (findUserByEmail(body.user.email)) {
+    if (userService.findUserByEmail(body.user.email)) {
         throw createError({
             statusCode: 422,
             message: 'User with this email already exists',
         })
     }
 
-    if (findUserByUsername(body.user.username)) {
+    if (userService.findUserByUsername(body.user.username)) {
         throw createError({
             statusCode: 422,
             message: 'User with this username already exists',
         })
     }
 
-    const user = createUser({
+    const user = userService.createUser({
         email: body.user.email,
         username: body.user.username,
         password: body.user.password,

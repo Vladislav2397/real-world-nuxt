@@ -1,9 +1,8 @@
-import { getCurrentUser } from '../../utils/auth'
-import { updateUser } from '../../utils/users'
+import { authService, userService } from '../../services'
 import { transformUser } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
-    const currentUser = getCurrentUser(event)
+    const currentUser = authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -14,7 +13,7 @@ export default defineEventHandler(async event => {
 
     const body = await readBody(event)
 
-    const updatedUser = updateUser(currentUser.id, {
+    const updatedUser = userService.updateUser(currentUser.id, {
         email: body?.user?.email,
         username: body?.user?.username,
         password: body?.user?.password,

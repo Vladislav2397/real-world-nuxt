@@ -1,8 +1,8 @@
-import { getCurrentUser } from '../../utils/auth'
+import { authService } from '../../services'
 import { transformUser } from '../../utils/transform'
 
 export default defineEventHandler(event => {
-    const user = getCurrentUser(event)
+    const user = authService.getCurrentUser(event)
 
     if (!user) {
         throw createError({
