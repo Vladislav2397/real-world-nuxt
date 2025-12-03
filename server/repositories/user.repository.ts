@@ -1,9 +1,8 @@
-import type { User } from '../types'
+import type { User } from '../utils/types'
 
 export class UserRepository {
-    private userIdCounter = 1
-
-    constructor(private users: User[]) {}
+    private nextId = 1
+    private users: User[] = []
 
     findById(id: number): User | undefined {
         return this.users.find(user => user.id === id)
@@ -23,7 +22,7 @@ export class UserRepository {
 
     create(data: { email: string; username: string; password: string }): User {
         const user: User = {
-            id: this.userIdCounter++,
+            id: this.nextId++,
             email: data.email,
             username: data.username,
             password: data.password,
@@ -68,7 +67,7 @@ export class UserRepository {
     }
 
     _set(users: User[]): void {
-        this.userIdCounter = users.length + 1
+        this.nextId = users.length + 1
         this.users = users
     }
 }

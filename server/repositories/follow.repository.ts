@@ -1,7 +1,7 @@
-import type { Follow } from '../types'
+import type { Follow } from '../utils/types'
 
 export class FollowRepository {
-    constructor(private follows: Follow[]) {}
+    private follows: Follow[] = []
 
     isFollowing(followerId: number, followingId: number): boolean {
         return this.follows.some(

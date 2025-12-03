@@ -1,7 +1,7 @@
-import type { Favorite } from '../types'
+import type { Favorite } from '../utils/types'
 
 export class FavoriteRepository {
-    constructor(private favorites: Favorite[]) {}
+    private favorites: Favorite[] = []
 
     isFavorited(articleId: number, userId: number): boolean {
         return this.favorites.some(

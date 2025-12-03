@@ -1,17 +1,28 @@
-import type { Article } from '../types'
+import type { Article } from '../utils/types'
 import type { FavoriteRepository } from './favorite.repository'
 import type { FollowRepository } from './follow.repository'
 import type { UserRepository } from './user.repository'
 
 export class ArticleRepository {
-    private articleIdCounter = 1
+    private nextId = 1
+    private articles: Article[] = []
+    private favoriteRepository: FavoriteRepository
+    private followRepository: FollowRepository
+    private userRepository: UserRepository
 
-    constructor(
-        private articles: Article[],
-        private favoriteRepository: FavoriteRepository,
-        private followRepository: FollowRepository,
-        private userRepository: UserRepository
-    ) {}
+    constructor({
+        favoriteRepository,
+        followRepository,
+        userRepository,
+    }: {
+        favoriteRepository: FavoriteRepository
+        followRepository: FollowRepository
+        userRepository: UserRepository
+    }) {
+        this.favoriteRepository = favoriteRepository
+        this.followRepository = followRepository
+        this.userRepository = userRepository
+    }
 
     findBySlug(slug: string): Article | undefined {
         return this.articles.find(article => article.slug === slug)
@@ -36,7 +47,7 @@ export class ArticleRepository {
         const now = new Date().toISOString()
 
         const article: Article = {
-            id: this.articleIdCounter++,
+            id: this.nextId++,
             slug,
             title: data.title,
             description: data.description,
@@ -221,7 +232,7 @@ export class ArticleRepository {
     }
 
     _set(articles: Article[]): void {
-        this.articleIdCounter = articles.length + 1
+        this.nextId = articles.length + 1
         this.articles = articles
     }
 }

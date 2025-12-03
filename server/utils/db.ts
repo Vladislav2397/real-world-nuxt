@@ -1,3 +1,3 @@
-import { createDb, seedDb } from './repositories'
+import { createDb } from '../repositories'
 
-export const db = seedDb(createDb())
+export const db = createDb()

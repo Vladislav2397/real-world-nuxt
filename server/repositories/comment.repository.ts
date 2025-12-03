@@ -1,9 +1,8 @@
-import type { Comment } from '../types'
+import type { Comment } from '../utils/types'
 
 export class CommentRepository {
-    private commentIdCounter = 1
-
-    constructor(private comments: Comment[]) {}
+    private nextId = 1
+    private comments: Comment[] = []
 
     findById(id: number): Comment | undefined {
         return this.comments.find(comment => comment.id === id)
@@ -27,7 +26,7 @@ export class CommentRepository {
         const now = new Date().toISOString()
 
         const comment: Comment = {
-            id: this.commentIdCounter++,
+            id: this.nextId++,
             body: data.body,
             createdAt: now,
             updatedAt: now,
@@ -52,7 +51,7 @@ export class CommentRepository {
     }
 
     _set(comments: Comment[]): void {
-        this.commentIdCounter = comments.length + 1
+        this.nextId = comments.length + 1
         this.comments = comments
     }
 }
