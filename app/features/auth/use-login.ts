@@ -30,6 +30,8 @@ export const useLogin = () => {
 
         token.value = result.user.token
 
+        await nextTick()
+
         await queryClient.fetchQuery(getCurrentUserQueryOptions())
 
         return result.user

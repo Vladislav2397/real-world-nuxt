@@ -1,5 +1,6 @@
 import type { User } from '../utils/types'
 import type { UserRepository } from '../repositories/user.repository'
+import { signToken } from '../utils/jwt'
 
 export class UserService {
     private userRepository: UserRepository
@@ -29,11 +30,17 @@ export class UserService {
         username: string
         password: string
     }): Promise<User> {
-        const token = this.generateToken(data.username)
-        return await this.userRepository.create({
-            ...data,
+        // Сначала создаем пользователя без токена
+        const user = await this.userRepository.create(data)
+
+        // Затем создаем JWT токен
+        const token = await this.generateToken(user)
+
+        // Возвращаем пользователя с токеном (токен не сохраняется в БД)
+        return {
+            ...user,
             token,
-        })
+        }
     }
 
     async updateUser(
@@ -49,13 +56,28 @@ export class UserService {
         return await this.userRepository.update(userId, data)
     }
 
-    async authenticateUser(email: string, password: string): Promise<User | null> {
+    async authenticateUser(
+        email: string,
+        password: string
+    ): Promise<User | null> {
         const user = await this.userRepository.findByEmail(email)
         if (!user || user.password !== password) return null
-        return user
+
+        // Создаем новый JWT токен для пользователя
+        const token = await this.generateToken(user)
+
+        // Возвращаем пользователя с токеном (токен не сохраняется в БД)
+        return {
+            ...user,
+            token,
+        }
     }
 
-    private generateToken(username: string): string {
-        return `jwt.token.${username}.${Date.now()}`
+    private async generateToken(user: User): Promise<string> {
+        return await signToken({
+            userId: user.id,
+            username: user.username,
+            email: user.email,
+        })
     }
 }

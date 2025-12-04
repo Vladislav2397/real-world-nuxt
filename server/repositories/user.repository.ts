@@ -1,5 +1,6 @@
 import type { User } from '../utils/types'
 import { prisma } from '../utils/prisma'
+import { verifyToken } from '../utils/jwt'
 
 export class UserRepository {
     private prismaToUser(
@@ -30,16 +31,8 @@ export class UserRepository {
         })
         if (!user) return undefined
 
-        // Получаем последний активный токен
-        const tokenRecord = await prisma.token.findFirst({
-            where: {
-                userId: id,
-                expiresAt: { gt: new Date() },
-            },
-            orderBy: { createdAt: 'desc' },
-        })
-
-        return this.prismaToUser(user, tokenRecord?.token || '')
+        // JWT токены не хранятся в БД, возвращаем пользователя без токена
+        return this.prismaToUser(user, '')
     }
 
     async findByEmail(email: string): Promise<User | undefined> {
@@ -48,15 +41,8 @@ export class UserRepository {
         })
         if (!user) return undefined
 
-        const tokenRecord = await prisma.token.findFirst({
-            where: {
-                userId: user.id,
-                expiresAt: { gt: new Date() },
-            },
-            orderBy: { createdAt: 'desc' },
-        })
-
-        return this.prismaToUser(user, tokenRecord?.token || '')
+        // JWT токены не хранятся в БД, возвращаем пользователя без токена
+        return this.prismaToUser(user, '')
     }
 
     async findByUsername(username: string): Promise<User | undefined> {
@@ -65,55 +51,46 @@ export class UserRepository {
         })
         if (!user) return undefined
 
-        const tokenRecord = await prisma.token.findFirst({
-            where: {
-                userId: user.id,
-                expiresAt: { gt: new Date() },
-            },
-            orderBy: { createdAt: 'desc' },
-        })
-
-        return this.prismaToUser(user, tokenRecord?.token || '')
+        // JWT токены не хранятся в БД, возвращаем пользователя без токена
+        return this.prismaToUser(user, '')
     }
 
     async findByToken(token: string): Promise<User | undefined> {
-        const tokenRecord = await prisma.token.findUnique({
-            where: { token },
-            include: { user: true },
-        })
-
-        if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
+        // Валидируем JWT токен
+        const payload = await verifyToken(token)
+        if (!payload) {
             return undefined
         }
 
-        return this.prismaToUser(tokenRecord.user, tokenRecord.token)
+        // Находим пользователя по userId из токена
+        const user = await prisma.user.findUnique({
+            where: { id: payload.userId },
+        })
+
+        if (!user) {
+            return undefined
+        }
+
+        // Возвращаем пользователя с токеном
+        return this.prismaToUser(user, token)
     }
 
     async create(data: {
         email: string
         username: string
         password: string
-        token: string
     }): Promise<User> {
-        // Создаем токен с истечением через 30 дней
-        const expiresAt = new Date()
-        expiresAt.setDate(expiresAt.getDate() + 30)
-
+        // JWT токены не хранятся в БД
         const user = await prisma.user.create({
             data: {
                 email: data.email,
                 username: data.username,
                 password: data.password,
-                tokens: {
-                    create: {
-                        token: data.token,
-                        expiresAt,
-                    },
-                },
             },
         })
 
-        return this.prismaToUser(user, data.token)
+        // Возвращаем пользователя без токена (токен будет создан в сервисе)
+        return this.prismaToUser(user, '')
     }
 
     async update(
@@ -142,15 +119,8 @@ export class UserRepository {
                 },
             })
 
-            const tokenRecord = await prisma.token.findFirst({
-                where: {
-                    userId: user.id,
-                    expiresAt: { gt: new Date() },
-                },
-                orderBy: { createdAt: 'desc' },
-            })
-
-            return this.prismaToUser(user, tokenRecord?.token || '')
+            // JWT токены не хранятся в БД, возвращаем пользователя без токена
+            return this.prismaToUser(user, '')
         } catch {
             return null
         }
@@ -158,18 +128,7 @@ export class UserRepository {
 
     async getAll(): Promise<User[]> {
         const users = await prisma.user.findMany()
-        const usersWithTokens = await Promise.all(
-            users.map(async user => {
-                const tokenRecord = await prisma.token.findFirst({
-                    where: {
-                        userId: user.id,
-                        expiresAt: { gt: new Date() },
-                    },
-                    orderBy: { createdAt: 'desc' },
-                })
-                return this.prismaToUser(user, tokenRecord?.token || '')
-            })
-        )
-        return usersWithTokens
+        // JWT токены не хранятся в БД, возвращаем пользователей без токенов
+        return users.map(user => this.prismaToUser(user, ''))
     }
 }
