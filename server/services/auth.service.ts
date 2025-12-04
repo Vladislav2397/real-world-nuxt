@@ -9,12 +9,12 @@ export class AuthService {
         this.userService = userService
     }
 
-    getCurrentUser(event: H3Event<EventHandlerRequest>) {
+    async getCurrentUser(event: H3Event<EventHandlerRequest>) {
         const authHeader = getHeader(event, 'authorization')
         if (!authHeader) return null
 
         // Формат: "Bearer <token>"
         const token = authHeader.replace(/^(Bearer)\s+/i, '')
-        return this.userService.findUserByToken(token)
+        return await this.userService.findUserByToken(token)
     }
 }

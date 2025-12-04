@@ -12,12 +12,12 @@ export class CommentService {
         this.commentRepository = commentRepository
     }
 
-    findCommentById(id: number): Comment | undefined {
-        return this.commentRepository.findById(id)
+    async findCommentById(id: number): Promise<Comment | undefined> {
+        return await this.commentRepository.findById(id)
     }
 
-    getCommentsByArticleId(articleId: number): Comment[] {
-        const comments = this.commentRepository.getByArticleId(articleId)
+    async getCommentsByArticleId(articleId: number): Promise<Comment[]> {
+        const comments = await this.commentRepository.getByArticleId(articleId)
         return comments.sort(
             (a, b) =>
                 new Date(b.createdAt).getTime() -
@@ -25,15 +25,15 @@ export class CommentService {
         )
     }
 
-    createComment(data: {
+    async createComment(data: {
         body: string
         articleId: number
         authorId: number
-    }): Comment {
-        return this.commentRepository.create(data)
+    }): Promise<Comment> {
+        return await this.commentRepository.create(data)
     }
 
-    deleteComment(id: number): boolean {
-        return this.commentRepository.delete(id)
+    async deleteComment(id: number): Promise<boolean> {
+        return await this.commentRepository.delete(id)
     }
 }

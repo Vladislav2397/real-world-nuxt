@@ -27,23 +27,23 @@ export class ArticleService {
         this.userRepository = userRepository
     }
 
-    findArticleBySlug(slug: string): Article | undefined {
-        return this.articleRepository.findBySlug(slug)
+    async findArticleBySlug(slug: string): Promise<Article | undefined> {
+        return await this.articleRepository.findBySlug(slug)
     }
 
-    findArticleById(id: number): Article | undefined {
-        return this.articleRepository.getById(id)
+    async findArticleById(id: number): Promise<Article | undefined> {
+        return await this.articleRepository.getById(id)
     }
 
-    createArticle(data: {
+    async createArticle(data: {
         title: string
         description: string
         body: string
         tagList: string[]
         authorId: number
-    }): Article {
-        const slug = this.generateUniqueSlug(data.title)
-        return this.articleRepository.create({
+    }): Promise<Article> {
+        const slug = await this.generateUniqueSlug(data.title)
+        return await this.articleRepository.create({
             slug,
             title: data.title,
             description: data.description,
@@ -53,7 +53,7 @@ export class ArticleService {
         })
     }
 
-    updateArticle(
+    async updateArticle(
         slug: string,
         data: {
             title?: string
@@ -61,8 +61,8 @@ export class ArticleService {
             body?: string
             tagList?: string[]
         }
-    ): Article | null {
-        const article = this.articleRepository.findBySlug(slug)
+    ): Promise<Article | null> {
+        const article = await this.articleRepository.findBySlug(slug)
         if (!article) return null
 
         const updateData: {
@@ -74,24 +74,25 @@ export class ArticleService {
         } = { ...data }
 
         if (data.title !== undefined) {
-            updateData.slug = this.generateUniqueSlug(data.title)
+            updateData.slug = await this.generateUniqueSlug(data.title)
         }
 
-        return this.articleRepository.update(slug, updateData)
+        return await this.articleRepository.update(slug, updateData)
     }
 
-    deleteArticle(slug: string): boolean {
-        return this.articleRepository.delete(slug)
+    async deleteArticle(slug: string): Promise<boolean> {
+        return await this.articleRepository.delete(slug)
     }
 
-    getArticles(filters?: {
+    async getArticles(filters?: {
         tag?: string
         author?: string
         favorited?: string
         limit?: number
         offset?: number
-    }): { articles: Article[]; articlesCount: number } {
-        let filtered = [...this.articleRepository.getAll()]
+    }): Promise<{ articles: Article[]; articlesCount: number }> {
+        const allArticles = await this.articleRepository.getAll()
+        let filtered = [...allArticles]
 
         if (filters?.tag) {
             filtered = filtered.filter(article =>
@@ -100,7 +101,7 @@ export class ArticleService {
         }
 
         if (filters?.author) {
-            const author = this.userRepository.findByUsername(filters.author)
+            const author = await this.userRepository.findByUsername(filters.author)
             if (author) {
                 filtered = filtered.filter(
                     article => article.authorId === author.id
@@ -111,11 +112,11 @@ export class ArticleService {
         }
 
         if (filters?.favorited) {
-            const user = this.userRepository.findByUsername(filters.favorited)
+            const user = await this.userRepository.findByUsername(filters.favorited)
             if (user) {
-                const favoritedArticleIds = this.favoriteRepository
+                const favoritedArticles = await this.favoriteRepository
                     .getByUserId(user.id)
-                    .map(fav => fav.articleId)
+                const favoritedArticleIds = favoritedArticles.map(fav => fav.articleId)
                 filtered = filtered.filter(article =>
                     favoritedArticleIds.includes(article.id)
                 )
@@ -133,21 +134,20 @@ export class ArticleService {
         return { articles: filtered, articlesCount }
     }
 
-    getFeedArticles(
+    async getFeedArticles(
         userId: number,
         limit?: number,
         offset?: number
-    ): { articles: Article[]; articlesCount: number } {
-        const following = this.followRepository.getFollowing(userId)
+    ): Promise<{ articles: Article[]; articlesCount: number }> {
+        const following = await this.followRepository.getFollowing(userId)
         const followingIds = following.map(follow => follow.followingId)
 
         if (followingIds.length === 0) {
             return { articles: [], articlesCount: 0 }
         }
 
-        let filtered = this.articleRepository
-            .getAll()
-            .filter(article => followingIds.includes(article.authorId))
+        const allArticles = await this.articleRepository.getAll()
+        let filtered = allArticles.filter(article => followingIds.includes(article.authorId))
 
         filtered.sort(
             (a, b) =>
@@ -164,29 +164,30 @@ export class ArticleService {
         return { articles: filtered, articlesCount }
     }
 
-    isArticleFavorited(articleId: number, userId: number): boolean {
-        return this.favoriteRepository.isFavorited(articleId, userId)
+    async isArticleFavorited(articleId: number, userId: number): Promise<boolean> {
+        return await this.favoriteRepository.isFavorited(articleId, userId)
     }
 
-    addFavorite(articleId: number, userId: number): boolean {
-        const success = this.favoriteRepository.add(articleId, userId)
+    async addFavorite(articleId: number, userId: number): Promise<boolean> {
+        const success = await this.favoriteRepository.add(articleId, userId)
         if (success) {
-            this.articleRepository.updateFavoritesCount(articleId, 1)
+            await this.articleRepository.updateFavoritesCount(articleId, 1)
         }
         return success
     }
 
-    removeFavorite(articleId: number, userId: number): boolean {
-        const success = this.favoriteRepository.remove(articleId, userId)
+    async removeFavorite(articleId: number, userId: number): Promise<boolean> {
+        const success = await this.favoriteRepository.remove(articleId, userId)
         if (success) {
-            this.articleRepository.updateFavoritesCount(articleId, -1)
+            await this.articleRepository.updateFavoritesCount(articleId, -1)
         }
         return success
     }
 
-    getAllTags(): string[] {
+    async getAllTags(): Promise<string[]> {
         const tagSet = new Set<string>()
-        this.articleRepository.getAll().forEach(article => {
+        const articles = await this.articleRepository.getAll()
+        articles.forEach(article => {
             article.tagList.forEach(tag => tagSet.add(tag))
         })
         return Array.from(tagSet).sort()
@@ -199,12 +200,12 @@ export class ArticleService {
             .replace(/^-+|-+$/g, '')
     }
 
-    private generateUniqueSlug(title: string): string {
+    private async generateUniqueSlug(title: string): Promise<string> {
         const baseSlug = this.createSlug(title)
         let slug = baseSlug
         let counter = 1
 
-        while (this.articleRepository.findBySlug(slug)) {
+        while (await this.articleRepository.findBySlug(slug)) {
             slug = `${baseSlug}-${counter}`
             counter++
         }

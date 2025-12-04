@@ -12,21 +12,21 @@ export default defineEventHandler(async event => {
     }
 
     // Проверяем, не существует ли уже пользователь с таким email или username
-    if (userService.findUserByEmail(body.user.email)) {
+    if (await userService.findUserByEmail(body.user.email)) {
         throw createError({
             statusCode: 422,
             message: 'User with this email already exists',
         })
     }
 
-    if (userService.findUserByUsername(body.user.username)) {
+    if (await userService.findUserByUsername(body.user.username)) {
         throw createError({
             statusCode: 422,
             message: 'User with this username already exists',
         })
     }
 
-    const user = userService.createUser({
+    const user = await userService.createUser({
         email: body.user.email,
         username: body.user.username,
         password: body.user.password,

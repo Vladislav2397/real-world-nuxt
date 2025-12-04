@@ -1,45 +1,122 @@
 import type { User } from '../utils/types'
+import { prisma } from '../utils/prisma'
 
 export class UserRepository {
-    private nextId = 1
-    private users: User[] = []
-
-    findById(id: number): User | undefined {
-        return this.users.find(user => user.id === id)
+    private prismaToUser(
+        prismaUser: {
+            id: number
+            email: string
+            username: string
+            password: string
+            bio: string | null
+            image: string | null
+        },
+        token: string
+    ): User {
+        return {
+            id: prismaUser.id,
+            email: prismaUser.email,
+            username: prismaUser.username,
+            password: prismaUser.password,
+            bio: prismaUser.bio,
+            image: prismaUser.image,
+            token,
+        }
     }
 
-    findByEmail(email: string): User | undefined {
-        return this.users.find(user => user.email === email)
+    async findById(id: number): Promise<User | undefined> {
+        const user = await prisma.user.findUnique({
+            where: { id },
+        })
+        if (!user) return undefined
+
+        // Получаем последний активный токен
+        const tokenRecord = await prisma.token.findFirst({
+            where: {
+                userId: id,
+                expiresAt: { gt: new Date() },
+            },
+            orderBy: { createdAt: 'desc' },
+        })
+
+        return this.prismaToUser(user, tokenRecord?.token || '')
     }
 
-    findByUsername(username: string): User | undefined {
-        return this.users.find(user => user.username === username)
+    async findByEmail(email: string): Promise<User | undefined> {
+        const user = await prisma.user.findUnique({
+            where: { email },
+        })
+        if (!user) return undefined
+
+        const tokenRecord = await prisma.token.findFirst({
+            where: {
+                userId: user.id,
+                expiresAt: { gt: new Date() },
+            },
+            orderBy: { createdAt: 'desc' },
+        })
+
+        return this.prismaToUser(user, tokenRecord?.token || '')
     }
 
-    findByToken(token: string): User | undefined {
-        return this.users.find(user => user.token === token)
+    async findByUsername(username: string): Promise<User | undefined> {
+        const user = await prisma.user.findUnique({
+            where: { username },
+        })
+        if (!user) return undefined
+
+        const tokenRecord = await prisma.token.findFirst({
+            where: {
+                userId: user.id,
+                expiresAt: { gt: new Date() },
+            },
+            orderBy: { createdAt: 'desc' },
+        })
+
+        return this.prismaToUser(user, tokenRecord?.token || '')
     }
 
-    create(data: {
+    async findByToken(token: string): Promise<User | undefined> {
+        const tokenRecord = await prisma.token.findUnique({
+            where: { token },
+            include: { user: true },
+        })
+
+        if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
+            return undefined
+        }
+
+        return this.prismaToUser(tokenRecord.user, tokenRecord.token)
+    }
+
+    async create(data: {
         email: string
         username: string
         password: string
         token: string
-    }): User {
-        const user: User = {
-            id: this.nextId++,
-            email: data.email,
-            username: data.username,
-            password: data.password,
-            bio: null,
-            image: null,
-            token: data.token,
-        }
-        this.users.push(user)
-        return user
+    }): Promise<User> {
+        // Создаем токен с истечением через 30 дней
+        const expiresAt = new Date()
+        expiresAt.setDate(expiresAt.getDate() + 30)
+
+        const user = await prisma.user.create({
+            data: {
+                email: data.email,
+                username: data.username,
+                password: data.password,
+                tokens: {
+                    create: {
+                        token: data.token,
+                        expiresAt,
+                    },
+                },
+            },
+        })
+
+        return this.prismaToUser(user, data.token)
     }
 
-    update(
+    async update(
         userId: number,
         data: {
             email?: string
@@ -48,25 +125,51 @@ export class UserRepository {
             bio?: string
             image?: string
         }
-    ): User | null {
-        const user = this.findById(userId)
-        if (!user) return null
+    ): Promise<User | null> {
+        try {
+            const user = await prisma.user.update({
+                where: { id: userId },
+                data: {
+                    ...(data.email !== undefined && { email: data.email }),
+                    ...(data.username !== undefined && {
+                        username: data.username,
+                    }),
+                    ...(data.password !== undefined && {
+                        password: data.password,
+                    }),
+                    ...(data.bio !== undefined && { bio: data.bio }),
+                    ...(data.image !== undefined && { image: data.image }),
+                },
+            })
 
-        if (data.email !== undefined) user.email = data.email
-        if (data.username !== undefined) user.username = data.username
-        if (data.password !== undefined) user.password = data.password
-        if (data.bio !== undefined) user.bio = data.bio
-        if (data.image !== undefined) user.image = data.image
+            const tokenRecord = await prisma.token.findFirst({
+                where: {
+                    userId: user.id,
+                    expiresAt: { gt: new Date() },
+                },
+                orderBy: { createdAt: 'desc' },
+            })
 
-        return user
+            return this.prismaToUser(user, tokenRecord?.token || '')
+        } catch {
+            return null
+        }
     }
 
-    getAll(): User[] {
-        return [...this.users]
-    }
-
-    _set(users: User[]): void {
-        this.nextId = users.length + 1
-        this.users = users
+    async getAll(): Promise<User[]> {
+        const users = await prisma.user.findMany()
+        const usersWithTokens = await Promise.all(
+            users.map(async user => {
+                const tokenRecord = await prisma.token.findFirst({
+                    where: {
+                        userId: user.id,
+                        expiresAt: { gt: new Date() },
+                    },
+                    orderBy: { createdAt: 'desc' },
+                })
+                return this.prismaToUser(user, tokenRecord?.token || '')
+            })
+        )
+        return usersWithTokens
     }
 }

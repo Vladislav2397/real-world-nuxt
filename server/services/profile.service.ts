@@ -7,16 +7,16 @@ export class ProfileService {
         this.followRepository = followRepository
     }
 
-    isFollowing(followerId: number, followingId: number): boolean {
-        return this.followRepository.isFollowing(followerId, followingId)
+    async isFollowing(followerId: number, followingId: number): Promise<boolean> {
+        return await this.followRepository.isFollowing(followerId, followingId)
     }
 
-    followUser(followerId: number, followingId: number): boolean {
+    async followUser(followerId: number, followingId: number): Promise<boolean> {
         if (followerId === followingId) return false
-        return this.followRepository.follow(followerId, followingId)
+        return await this.followRepository.follow(followerId, followingId)
     }
 
-    unfollowUser(followerId: number, followingId: number): boolean {
-        return this.followRepository.unfollow(followerId, followingId)
+    async unfollowUser(followerId: number, followingId: number): Promise<boolean> {
+        return await this.followRepository.unfollow(followerId, followingId)
     }
 }

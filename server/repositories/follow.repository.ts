@@ -1,49 +1,79 @@
 import type { Follow } from '../utils/types'
+import { prisma } from '../utils/prisma'
 
 export class FollowRepository {
-    private follows: Follow[] = []
-
-    isFollowing(followerId: number, followingId: number): boolean {
-        return this.follows.some(
-            follow =>
-                follow.followerId === followerId &&
-                follow.followingId === followingId
-        )
+    private prismaToFollow(prismaFollow: {
+        followerId: number
+        followingId: number
+    }): Follow {
+        return {
+            followerId: prismaFollow.followerId,
+            followingId: prismaFollow.followingId,
+        }
     }
 
-    follow(followerId: number, followingId: number): boolean {
-        const exists = this.isFollowing(followerId, followingId)
-        if (exists) return false
-
-        this.follows.push({ followerId, followingId })
-        return true
+    async isFollowing(
+        followerId: number,
+        followingId: number
+    ): Promise<boolean> {
+        const follow = await prisma.follow.findUnique({
+            where: {
+                followerId_followingId: {
+                    followerId,
+                    followingId,
+                },
+            },
+        })
+        return follow !== null
     }
 
-    unfollow(followerId: number, followingId: number): boolean {
-        const index = this.follows.findIndex(
-            follow =>
-                follow.followerId === followerId &&
-                follow.followingId === followingId
-        )
-        if (index === -1) return false
-
-        this.follows.splice(index, 1)
-        return true
+    async follow(followerId: number, followingId: number): Promise<boolean> {
+        try {
+            await prisma.follow.create({
+                data: {
+                    followerId,
+                    followingId,
+                },
+            })
+            return true
+        } catch {
+            // Уже существует или другая ошибка
+            return false
+        }
     }
 
-    getFollowers(userId: number): Follow[] {
-        return this.follows.filter(follow => follow.followingId === userId)
+    async unfollow(followerId: number, followingId: number): Promise<boolean> {
+        try {
+            await prisma.follow.delete({
+                where: {
+                    followerId_followingId: {
+                        followerId,
+                        followingId,
+                    },
+                },
+            })
+            return true
+        } catch {
+            return false
+        }
     }
 
-    getFollowing(userId: number): Follow[] {
-        return this.follows.filter(follow => follow.followerId === userId)
+    async getFollowers(userId: number): Promise<Follow[]> {
+        const follows = await prisma.follow.findMany({
+            where: { followingId: userId },
+        })
+        return follows.map(f => this.prismaToFollow(f))
     }
 
-    getAll(): Follow[] {
-        return [...this.follows]
+    async getFollowing(userId: number): Promise<Follow[]> {
+        const follows = await prisma.follow.findMany({
+            where: { followerId: userId },
+        })
+        return follows.map(f => this.prismaToFollow(f))
     }
 
-    _set(follows: Follow[]): void {
-        this.follows = follows
+    async getAll(): Promise<Follow[]> {
+        const follows = await prisma.follow.findMany()
+        return follows.map(f => this.prismaToFollow(f))
     }
 }

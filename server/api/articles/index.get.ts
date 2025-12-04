@@ -4,7 +4,7 @@ import { transformArticlePreview } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
     const query = getQuery(event)
-    const currentUser = authService.getCurrentUser(event)
+    const currentUser = await authService.getCurrentUser(event)
 
     const filters = {
         tag: query.tag as string | undefined,
@@ -14,11 +14,13 @@ export default defineEventHandler(async event => {
         offset: query.offset ? Number(query.offset) : undefined,
     }
 
-    const { articles, articlesCount } = articleService.getArticles(filters)
+    const { articles, articlesCount } = await articleService.getArticles(filters)
 
     return {
-        articles: articles.map(article =>
-            transformArticlePreview(article, currentUser?.id)
+        articles: await Promise.all(
+            articles.map(article =>
+                transformArticlePreview(article, currentUser?.id)
+            )
         ),
         articlesCount,
     }

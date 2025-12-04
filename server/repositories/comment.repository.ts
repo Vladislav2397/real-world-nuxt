@@ -1,51 +1,71 @@
 import type { Comment } from '../utils/types'
+import { prisma } from '../utils/prisma'
 
 export class CommentRepository {
-    private nextId = 1
-    private comments: Comment[] = []
-
-    findById(id: number): Comment | undefined {
-        return this.comments.find(comment => comment.id === id)
+    private prismaToComment(prismaComment: {
+        id: number
+        body: string
+        createdAt: Date
+        updatedAt: Date
+        articleId: number
+        userId: number
+    }): Comment {
+        return {
+            id: prismaComment.id,
+            body: prismaComment.body,
+            createdAt: prismaComment.createdAt.toISOString(),
+            updatedAt: prismaComment.updatedAt.toISOString(),
+            articleId: prismaComment.articleId,
+            authorId: prismaComment.userId,
+        }
     }
 
-    getByArticleId(articleId: number): Comment[] {
-        return this.comments.filter(comment => comment.articleId === articleId)
+    async findById(id: number): Promise<Comment | undefined> {
+        const comment = await prisma.comment.findUnique({
+            where: { id },
+        })
+        if (!comment) return undefined
+        return this.prismaToComment(comment)
     }
 
-    create(data: {
+    async getByArticleId(articleId: number): Promise<Comment[]> {
+        const comments = await prisma.comment.findMany({
+            where: { articleId },
+            orderBy: { createdAt: 'desc' },
+        })
+        return comments.map(c => this.prismaToComment(c))
+    }
+
+    async create(data: {
         body: string
         articleId: number
         authorId: number
-    }): Comment {
-        const now = new Date().toISOString()
+    }): Promise<Comment> {
+        const comment = await prisma.comment.create({
+            data: {
+                body: data.body,
+                articleId: data.articleId,
+                userId: data.authorId,
+            },
+        })
+        return this.prismaToComment(comment)
+    }
 
-        const comment: Comment = {
-            id: this.nextId++,
-            body: data.body,
-            createdAt: now,
-            updatedAt: now,
-            articleId: data.articleId,
-            authorId: data.authorId,
+    async delete(id: number): Promise<boolean> {
+        try {
+            await prisma.comment.delete({
+                where: { id },
+            })
+            return true
+        } catch {
+            return false
         }
-
-        this.comments.push(comment)
-        return comment
     }
 
-    delete(id: number): boolean {
-        const index = this.comments.findIndex(comment => comment.id === id)
-        if (index === -1) return false
-
-        this.comments.splice(index, 1)
-        return true
-    }
-
-    getAll(): Comment[] {
-        return [...this.comments]
-    }
-
-    _set(comments: Comment[]): void {
-        this.nextId = comments.length + 1
-        this.comments = comments
+    async getAll(): Promise<Comment[]> {
+        const comments = await prisma.comment.findMany({
+            orderBy: { createdAt: 'desc' },
+        })
+        return comments.map(c => this.prismaToComment(c))
     }
 }

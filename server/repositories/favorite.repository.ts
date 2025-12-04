@@ -1,45 +1,76 @@
 import type { Favorite } from '../utils/types'
+import { prisma } from '../utils/prisma'
 
 export class FavoriteRepository {
-    private favorites: Favorite[] = []
-
-    isFavorited(articleId: number, userId: number): boolean {
-        return this.favorites.some(
-            fav => fav.articleId === articleId && fav.userId === userId
-        )
+    private prismaToFavorite(prismaFavorite: {
+        userId: number
+        articleId: number
+    }): Favorite {
+        return {
+            userId: prismaFavorite.userId,
+            articleId: prismaFavorite.articleId,
+        }
     }
 
-    add(articleId: number, userId: number): boolean {
-        const exists = this.isFavorited(articleId, userId)
-        if (exists) return false
-
-        this.favorites.push({ articleId, userId })
-        return true
+    async isFavorited(articleId: number, userId: number): Promise<boolean> {
+        const favorite = await prisma.favorite.findUnique({
+            where: {
+                userId_articleId: {
+                    userId,
+                    articleId,
+                },
+            },
+        })
+        return favorite !== null
     }
 
-    remove(articleId: number, userId: number): boolean {
-        const index = this.favorites.findIndex(
-            fav => fav.articleId === articleId && fav.userId === userId
-        )
-        if (index === -1) return false
-
-        this.favorites.splice(index, 1)
-        return true
+    async add(articleId: number, userId: number): Promise<boolean> {
+        try {
+            await prisma.favorite.create({
+                data: {
+                    articleId,
+                    userId,
+                },
+            })
+            return true
+        } catch {
+            // Уже существует или другая ошибка
+            return false
+        }
     }
 
-    getByUserId(userId: number): Favorite[] {
-        return this.favorites.filter(fav => fav.userId === userId)
+    async remove(articleId: number, userId: number): Promise<boolean> {
+        try {
+            await prisma.favorite.delete({
+                where: {
+                    userId_articleId: {
+                        userId,
+                        articleId,
+                    },
+                },
+            })
+            return true
+        } catch {
+            return false
+        }
     }
 
-    getByArticleId(articleId: number): Favorite[] {
-        return this.favorites.filter(fav => fav.articleId === articleId)
+    async getByUserId(userId: number): Promise<Favorite[]> {
+        const favorites = await prisma.favorite.findMany({
+            where: { userId },
+        })
+        return favorites.map(f => this.prismaToFavorite(f))
     }
 
-    getAll(): Favorite[] {
-        return [...this.favorites]
+    async getByArticleId(articleId: number): Promise<Favorite[]> {
+        const favorites = await prisma.favorite.findMany({
+            where: { articleId },
+        })
+        return favorites.map(f => this.prismaToFavorite(f))
     }
 
-    _set(favorites: Favorite[]): void {
-        this.favorites = favorites
+    async getAll(): Promise<Favorite[]> {
+        const favorites = await prisma.favorite.findMany()
+        return favorites.map(f => this.prismaToFavorite(f))
     }
 }

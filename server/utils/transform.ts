@@ -11,20 +11,23 @@ export const transformUser = (user: User) => {
     }
 }
 
-export const transformProfile = (user: User, currentUserId?: number) => {
+export const transformProfile = async (user: User, currentUserId?: number) => {
     return {
         username: user.username,
         bio: user.bio ?? '',
         image: user.image,
         following:
             currentUserId !== undefined
-                ? profileService.isFollowing(currentUserId, user.id)
+                ? await profileService.isFollowing(currentUserId, user.id)
                 : false,
     }
 }
 
-export const transformArticle = (article: Article, currentUserId?: number) => {
-    const author = userService.findUserById(article.authorId)
+export const transformArticle = async (
+    article: Article,
+    currentUserId?: number
+) => {
+    const author = await userService.findUserById(article.authorId)
     if (!author) {
         throw new Error(`Author with id ${article.authorId} not found`)
     }
@@ -39,18 +42,21 @@ export const transformArticle = (article: Article, currentUserId?: number) => {
         updatedAt: article.updatedAt,
         favorited:
             currentUserId !== undefined
-                ? articleService.isArticleFavorited(article.id, currentUserId)
+                ? await articleService.isArticleFavorited(
+                      article.id,
+                      currentUserId
+                  )
                 : false,
         favoritesCount: article.favoritesCount,
-        author: transformProfile(author, currentUserId),
+        author: await transformProfile(author, currentUserId),
     }
 }
 
-export const transformArticlePreview = (
+export const transformArticlePreview = async (
     article: Article,
     currentUserId?: number
 ) => {
-    const author = userService.findUserById(article.authorId)
+    const author = await userService.findUserById(article.authorId)
     if (!author) {
         throw new Error(`Author with id ${article.authorId} not found`)
     }
@@ -65,14 +71,20 @@ export const transformArticlePreview = (
         favoritesCount: article.favoritesCount,
         favorited:
             currentUserId !== undefined
-                ? articleService.isArticleFavorited(article.id, currentUserId)
+                ? await articleService.isArticleFavorited(
+                      article.id,
+                      currentUserId
+                  )
                 : false,
-        author: transformProfile(author, currentUserId),
+        author: await transformProfile(author, currentUserId),
     }
 }
 
-export const transformComment = (comment: Comment, currentUserId?: number) => {
-    const author = userService.findUserById(comment.authorId)
+export const transformComment = async (
+    comment: Comment,
+    currentUserId?: number
+) => {
+    const author = await userService.findUserById(comment.authorId)
     if (!author) {
         throw new Error(`Author with id ${comment.authorId} not found`)
     }
@@ -82,6 +94,6 @@ export const transformComment = (comment: Comment, currentUserId?: number) => {
         createdAt: comment.createdAt,
         updatedAt: comment.updatedAt,
         body: comment.body,
-        author: transformProfile(author, currentUserId),
+        author: await transformProfile(author, currentUserId),
     }
 }

@@ -3,7 +3,7 @@ import { authService, articleService } from '../../services'
 import { transformArticle } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
-    const currentUser = authService.getCurrentUser(event)
+    const currentUser = await authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -21,7 +21,7 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const article = articleService.findArticleBySlug(slug)
+    const article = await articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -39,7 +39,7 @@ export default defineEventHandler(async event => {
 
     const body = await readBody(event)
 
-    const updatedArticle = articleService.updateArticle(slug, {
+    const updatedArticle = await articleService.updateArticle(slug, {
         title: body?.article?.title,
         description: body?.article?.description,
         body: body?.article?.body,
@@ -54,6 +54,6 @@ export default defineEventHandler(async event => {
     }
 
     return {
-        article: transformArticle(updatedArticle, currentUser.id),
+        article: await transformArticle(updatedArticle, currentUser.id),
     }
 })

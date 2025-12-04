@@ -8,35 +8,35 @@ export class UserService {
         this.userRepository = userRepository
     }
 
-    findUserByEmail(email: string): User | undefined {
-        return this.userRepository.findByEmail(email)
+    async findUserByEmail(email: string): Promise<User | undefined> {
+        return await this.userRepository.findByEmail(email)
     }
 
-    findUserByUsername(username: string): User | undefined {
-        return this.userRepository.findByUsername(username)
+    async findUserByUsername(username: string): Promise<User | undefined> {
+        return await this.userRepository.findByUsername(username)
     }
 
-    findUserById(id: number): User | undefined {
-        return this.userRepository.findById(id)
+    async findUserById(id: number): Promise<User | undefined> {
+        return await this.userRepository.findById(id)
     }
 
-    findUserByToken(token: string): User | undefined {
-        return this.userRepository.findByToken(token)
+    async findUserByToken(token: string): Promise<User | undefined> {
+        return await this.userRepository.findByToken(token)
     }
 
-    createUser(data: {
+    async createUser(data: {
         email: string
         username: string
         password: string
-    }): User {
+    }): Promise<User> {
         const token = this.generateToken(data.username)
-        return this.userRepository.create({
+        return await this.userRepository.create({
             ...data,
             token,
         })
     }
 
-    updateUser(
+    async updateUser(
         userId: number,
         data: {
             email?: string
@@ -45,12 +45,12 @@ export class UserService {
             bio?: string
             image?: string
         }
-    ): User | null {
-        return this.userRepository.update(userId, data)
+    ): Promise<User | null> {
+        return await this.userRepository.update(userId, data)
     }
 
-    authenticateUser(email: string, password: string): User | null {
-        const user = this.userRepository.findByEmail(email)
+    async authenticateUser(email: string, password: string): Promise<User | null> {
+        const user = await this.userRepository.findByEmail(email)
         if (!user || user.password !== password) return null
         return user
     }

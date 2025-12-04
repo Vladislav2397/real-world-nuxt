@@ -2,8 +2,8 @@ import { getRouterParam } from 'h3'
 import { authService, articleService } from '../../../services'
 import { transformArticle } from '../../../utils/transform'
 
-export default defineEventHandler(event => {
-    const currentUser = authService.getCurrentUser(event)
+export default defineEventHandler(async event => {
+    const currentUser = await authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -23,7 +23,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const article = articleService.findArticleBySlug(slug)
+    const article = await articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -32,7 +32,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const isSuccess = articleService.addFavorite(article.id, currentUser.id)
+    const isSuccess = await articleService.addFavorite(article.id, currentUser.id)
 
     if (!isSuccess) {
         throw createError({
@@ -41,7 +41,10 @@ export default defineEventHandler(event => {
         })
     }
 
+    // Обновляем статью после добавления в избранное
+    const updatedArticle = await articleService.findArticleBySlug(slug)
+
     return {
-        article: transformArticle(article, currentUser.id),
+        article: await transformArticle(updatedArticle!, currentUser.id),
     }
 })

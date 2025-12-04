@@ -1,7 +1,7 @@
 import { articleService } from '../services'
 
-export default defineEventHandler(_event => {
-    const tags = articleService.getAllTags()
+export default defineEventHandler(async _event => {
+    const tags = await articleService.getAllTags()
 
     return {
         tags,

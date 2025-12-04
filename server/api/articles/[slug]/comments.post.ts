@@ -3,7 +3,7 @@ import { authService, articleService, commentService } from '../../../services'
 import { transformComment } from '../../../utils/transform'
 
 export default defineEventHandler(async event => {
-    const currentUser = authService.getCurrentUser(event)
+    const currentUser = await authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -21,7 +21,7 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const article = articleService.findArticleBySlug(slug)
+    const article = await articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -39,13 +39,13 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const comment = commentService.createComment({
+    const comment = await commentService.createComment({
         body: body.comment.body,
         articleId: article.id,
         authorId: currentUser.id,
     })
 
     return {
-        comment: transformComment(comment, currentUser.id),
+        comment: await transformComment(comment, currentUser.id),
     }
 })

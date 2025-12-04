@@ -2,8 +2,8 @@ import { getQuery } from 'h3'
 import { authService, articleService } from '../../services'
 import { transformArticlePreview } from '../../utils/transform'
 
-export default defineEventHandler(event => {
-    const currentUser = authService.getCurrentUser(event)
+export default defineEventHandler(async event => {
+    const currentUser = await authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -16,15 +16,17 @@ export default defineEventHandler(event => {
     const limit = query.limit ? Number(query.limit) : undefined
     const offset = query.offset ? Number(query.offset) : undefined
 
-    const { articles, articlesCount } = articleService.getFeedArticles(
+    const { articles, articlesCount } = await articleService.getFeedArticles(
         currentUser.id,
         limit,
         offset
     )
 
     return {
-        articles: articles.map(article =>
-            transformArticlePreview(article, currentUser.id)
+        articles: await Promise.all(
+            articles.map(article =>
+                transformArticlePreview(article, currentUser.id)
+            )
         ),
         articlesCount,
     }

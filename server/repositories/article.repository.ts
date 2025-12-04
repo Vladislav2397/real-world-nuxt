@@ -1,49 +1,84 @@
 import type { Article } from '../utils/types'
+import { prisma } from '../utils/prisma'
 
 export class ArticleRepository {
-    private nextId = 1
-    private articles: Article[] = []
-
-    findBySlug(slug: string): Article | undefined {
-        return this.articles.find(article => article.slug === slug)
+    private async getFavoritesCount(articleId: number): Promise<number> {
+        return await prisma.favorite.count({
+            where: { articleId },
+        })
     }
 
-    getById(id: number): Article | undefined {
-        return this.articles.find(article => article.id === id)
+    private async prismaToArticle(prismaArticle: {
+        id: number
+        slug: string
+        title: string
+        description: string
+        body: string
+        tagList: string[]
+        createdAt: Date
+        updatedAt: Date
+        authorId: number
+    }): Promise<Article> {
+        const favoritesCount = await this.getFavoritesCount(prismaArticle.id)
+        return {
+            id: prismaArticle.id,
+            slug: prismaArticle.slug,
+            title: prismaArticle.title,
+            description: prismaArticle.description,
+            body: prismaArticle.body,
+            tagList: prismaArticle.tagList,
+            createdAt: prismaArticle.createdAt.toISOString(),
+            updatedAt: prismaArticle.updatedAt.toISOString(),
+            authorId: prismaArticle.authorId,
+            favoritesCount,
+        }
     }
 
-    getAll(): Article[] {
-        return [...this.articles]
+    async findBySlug(slug: string): Promise<Article | undefined> {
+        const article = await prisma.article.findUnique({
+            where: { slug },
+        })
+        if (!article) return undefined
+        return await this.prismaToArticle(article)
     }
 
-    create(data: {
+    async getById(id: number): Promise<Article | undefined> {
+        const article = await prisma.article.findUnique({
+            where: { id },
+        })
+        if (!article) return undefined
+        return await this.prismaToArticle(article)
+    }
+
+    async getAll(): Promise<Article[]> {
+        const articles = await prisma.article.findMany({
+            orderBy: { createdAt: 'desc' },
+        })
+        return Promise.all(articles.map(a => this.prismaToArticle(a)))
+    }
+
+    async create(data: {
         slug: string
         title: string
         description: string
         body: string
         tagList: string[]
         authorId: number
-    }): Article {
-        const now = new Date().toISOString()
-
-        const article: Article = {
-            id: this.nextId++,
-            slug: data.slug,
-            title: data.title,
-            description: data.description,
-            body: data.body,
-            tagList: data.tagList || [],
-            createdAt: now,
-            updatedAt: now,
-            authorId: data.authorId,
-            favoritesCount: 0,
-        }
-
-        this.articles.push(article)
-        return article
+    }): Promise<Article> {
+        const article = await prisma.article.create({
+            data: {
+                slug: data.slug,
+                title: data.title,
+                description: data.description,
+                body: data.body,
+                tagList: data.tagList || [],
+                authorId: data.authorId,
+            },
+        })
+        return await this.prismaToArticle(article)
     }
 
-    update(
+    async update(
         slug: string,
         data: {
             slug?: string
@@ -52,39 +87,43 @@ export class ArticleRepository {
             body?: string
             tagList?: string[]
         }
-    ): Article | null {
-        const article = this.findBySlug(slug)
-        if (!article) return null
+    ): Promise<Article | null> {
+        const existing = await prisma.article.findUnique({
+            where: { slug },
+        })
+        if (!existing) return null
 
-        if (data.slug !== undefined) article.slug = data.slug
-        if (data.title !== undefined) article.title = data.title
-        if (data.description !== undefined)
-            article.description = data.description
-        if (data.body !== undefined) article.body = data.body
-        if (data.tagList !== undefined) article.tagList = data.tagList
-
-        article.updatedAt = new Date().toISOString()
-
-        return article
+        const article = await prisma.article.update({
+            where: { slug },
+            data: {
+                ...(data.slug !== undefined && { slug: data.slug }),
+                ...(data.title !== undefined && { title: data.title }),
+                ...(data.description !== undefined && {
+                    description: data.description,
+                }),
+                ...(data.body !== undefined && { body: data.body }),
+                ...(data.tagList !== undefined && { tagList: data.tagList }),
+            },
+        })
+        return await this.prismaToArticle(article)
     }
 
-    delete(slug: string): boolean {
-        const index = this.articles.findIndex(article => article.slug === slug)
-        if (index === -1) return false
-
-        this.articles.splice(index, 1)
-        return true
-    }
-
-    updateFavoritesCount(articleId: number, delta: number): void {
-        const article = this.getById(articleId)
-        if (article) {
-            article.favoritesCount = Math.max(0, article.favoritesCount + delta)
+    async delete(slug: string): Promise<boolean> {
+        try {
+            await prisma.article.delete({
+                where: { slug },
+            })
+            return true
+        } catch {
+            return false
         }
     }
 
-    _set(articles: Article[]): void {
-        this.nextId = articles.length + 1
-        this.articles = articles
+    async updateFavoritesCount(
+        _articleId: number,
+        _delta: number
+    ): Promise<void> {
+        // В Prisma favoritesCount вычисляется динамически, поэтому этот метод не нужен
+        // Оставлен для совместимости с существующим кодом
     }
 }

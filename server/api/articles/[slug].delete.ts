@@ -1,8 +1,8 @@
 import { getRouterParam } from 'h3'
 import { authService, articleService } from '../../services'
 
-export default defineEventHandler(event => {
-    const currentUser = authService.getCurrentUser(event)
+export default defineEventHandler(async event => {
+    const currentUser = await authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -20,7 +20,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const article = articleService.findArticleBySlug(slug)
+    const article = await articleService.findArticleBySlug(slug)
 
     if (!article) {
         throw createError({
@@ -36,7 +36,7 @@ export default defineEventHandler(event => {
         })
     }
 
-    const deleted = articleService.deleteArticle(slug)
+    const deleted = await articleService.deleteArticle(slug)
 
     if (!deleted) {
         throw createError({

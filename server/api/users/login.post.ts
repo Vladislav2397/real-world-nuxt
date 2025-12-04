@@ -20,7 +20,10 @@ export default defineEventHandler(async event => {
         })
     }
 
-    const user = userService.authenticateUser(body.user.email, body.user.password)
+    const user = await userService.authenticateUser(
+        body.user.email,
+        body.user.password
+    )
 
     if (!user) {
         throw createError({

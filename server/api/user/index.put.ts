@@ -2,7 +2,7 @@ import { authService, userService } from '../../services'
 import { transformUser } from '../../utils/transform'
 
 export default defineEventHandler(async event => {
-    const currentUser = authService.getCurrentUser(event)
+    const currentUser = await authService.getCurrentUser(event)
 
     if (!currentUser) {
         throw createError({
@@ -13,7 +13,7 @@ export default defineEventHandler(async event => {
 
     const body = await readBody(event)
 
-    const updatedUser = userService.updateUser(currentUser.id, {
+    const updatedUser = await userService.updateUser(currentUser.id, {
         email: body?.user?.email,
         username: body?.user?.username,
         password: body?.user?.password,
