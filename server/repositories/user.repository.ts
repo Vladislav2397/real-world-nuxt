@@ -20,7 +20,12 @@ export class UserRepository {
         return this.users.find(user => user.token === token)
     }
 
-    create(data: { email: string; username: string; password: string }): User {
+    create(data: {
+        email: string
+        username: string
+        password: string
+        token: string
+    }): User {
         const user: User = {
             id: this.nextId++,
             email: data.email,
@@ -28,7 +33,7 @@ export class UserRepository {
             password: data.password,
             bio: null,
             image: null,
-            token: `jwt.token.${data.username}.${Date.now()}`,
+            token: data.token,
         }
         this.users.push(user)
         return user
@@ -53,12 +58,6 @@ export class UserRepository {
         if (data.bio !== undefined) user.bio = data.bio
         if (data.image !== undefined) user.image = data.image
 
-        return user
-    }
-
-    authenticate(email: string, password: string): User | null {
-        const user = this.findByEmail(email)
-        if (!user || user.password !== password) return null
         return user
     }
 

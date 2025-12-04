@@ -9,13 +9,7 @@ export class CommentRepository {
     }
 
     getByArticleId(articleId: number): Comment[] {
-        return this.comments
-            .filter(comment => comment.articleId === articleId)
-            .sort(
-                (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-            )
+        return this.comments.filter(comment => comment.articleId === articleId)
     }
 
     create(data: {

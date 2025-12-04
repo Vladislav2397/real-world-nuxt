@@ -12,8 +12,6 @@ export class FollowRepository {
     }
 
     follow(followerId: number, followingId: number): boolean {
-        if (followerId === followingId) return false
-
         const exists = this.isFollowing(followerId, followingId)
         if (exists) return false
 

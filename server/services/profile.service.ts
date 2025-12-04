@@ -1,15 +1,22 @@
-import { db } from '../utils/db'
+import type { FollowRepository } from '../repositories/follow.repository'
 
 export class ProfileService {
+    private followRepository: FollowRepository
+
+    constructor({ followRepository }: { followRepository: FollowRepository }) {
+        this.followRepository = followRepository
+    }
+
     isFollowing(followerId: number, followingId: number): boolean {
-        return db.follow.isFollowing(followerId, followingId)
+        return this.followRepository.isFollowing(followerId, followingId)
     }
 
     followUser(followerId: number, followingId: number): boolean {
-        return db.follow.follow(followerId, followingId)
+        if (followerId === followingId) return false
+        return this.followRepository.follow(followerId, followingId)
     }
 
     unfollowUser(followerId: number, followingId: number): boolean {
-        return db.follow.unfollow(followerId, followingId)
+        return this.followRepository.unfollow(followerId, followingId)
     }
 }

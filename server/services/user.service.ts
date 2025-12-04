@@ -1,21 +1,27 @@
-import { db } from '../utils/db'
 import type { User } from '../utils/types'
+import type { UserRepository } from '../repositories/user.repository'
 
 export class UserService {
+    private userRepository: UserRepository
+
+    constructor({ userRepository }: { userRepository: UserRepository }) {
+        this.userRepository = userRepository
+    }
+
     findUserByEmail(email: string): User | undefined {
-        return db.user.findByEmail(email)
+        return this.userRepository.findByEmail(email)
     }
 
     findUserByUsername(username: string): User | undefined {
-        return db.user.findByUsername(username)
+        return this.userRepository.findByUsername(username)
     }
 
     findUserById(id: number): User | undefined {
-        return db.user.findById(id)
+        return this.userRepository.findById(id)
     }
 
     findUserByToken(token: string): User | undefined {
-        return db.user.findByToken(token)
+        return this.userRepository.findByToken(token)
     }
 
     createUser(data: {
@@ -23,7 +29,11 @@ export class UserService {
         username: string
         password: string
     }): User {
-        return db.user.create(data)
+        const token = this.generateToken(data.username)
+        return this.userRepository.create({
+            ...data,
+            token,
+        })
     }
 
     updateUser(
@@ -36,10 +46,16 @@ export class UserService {
             image?: string
         }
     ): User | null {
-        return db.user.update(userId, data)
+        return this.userRepository.update(userId, data)
     }
 
     authenticateUser(email: string, password: string): User | null {
-        return db.user.authenticate(email, password)
+        const user = this.userRepository.findByEmail(email)
+        if (!user || user.password !== password) return null
+        return user
+    }
+
+    private generateToken(username: string): string {
+        return `jwt.token.${username}.${Date.now()}`
     }
 }
