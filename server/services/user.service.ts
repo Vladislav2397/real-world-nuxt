@@ -1,6 +1,7 @@
 import type { User } from '../utils/types'
 import type { UserRepository } from '../repositories/user.repository'
 import { signToken } from '../utils/jwt'
+import { hashPassword, comparePassword } from '../utils/password'
 
 export class UserService {
     private userRepository: UserRepository
@@ -30,8 +31,14 @@ export class UserService {
         username: string
         password: string
     }): Promise<User> {
-        // Сначала создаем пользователя без токена
-        const user = await this.userRepository.create(data)
+        // Хешируем пароль перед сохранением
+        const hashedPassword = await hashPassword(data.password)
+
+        // Создаем пользователя с хешированным паролем
+        const user = await this.userRepository.create({
+            ...data,
+            password: hashedPassword,
+        })
 
         // Затем создаем JWT токен
         const token = await this.generateToken(user)
@@ -53,7 +60,13 @@ export class UserService {
             image?: string
         }
     ): Promise<User | null> {
-        return await this.userRepository.update(userId, data)
+        // Если обновляется пароль, хешируем его
+        const updateData = { ...data }
+        if (updateData.password) {
+            updateData.password = await hashPassword(updateData.password)
+        }
+
+        return await this.userRepository.update(userId, updateData)
     }
 
     async authenticateUser(
@@ -61,7 +74,11 @@ export class UserService {
         password: string
     ): Promise<User | null> {
         const user = await this.userRepository.findByEmail(email)
-        if (!user || user.password !== password) return null
+        if (!user) return null
+
+        // Сравниваем пароль с хешем (защищено от timing attacks)
+        const isPasswordValid = await comparePassword(password, user.password)
+        if (!isPasswordValid) return null
 
         // Создаем новый JWT токен для пользователя
         const token = await this.generateToken(user)

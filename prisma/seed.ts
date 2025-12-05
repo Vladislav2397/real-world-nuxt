@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { PrismaClient } from './generated/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { faker } from '@faker-js/faker'
+import { hashPassword } from '../server/utils/password'
 
 if (!process.env.DATABASE_URL) {
     throw new Error('DATABASE_URL is not set')
@@ -46,11 +47,14 @@ async function main() {
     // Создаем 5 пользователей
     const users = []
     for (let i = 0; i < 5; i++) {
+        const password = faker.internet.password({ length: 12 })
+        const hashedPassword = await hashPassword(password)
+        
         const user = await prisma.user.create({
             data: {
                 username: faker.internet.username(),
                 email: faker.internet.email(),
-                password: faker.internet.password(),
+                password: hashedPassword,
                 bio: faker.person.bio(),
                 image: faker.image.avatar(),
             },

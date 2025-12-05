@@ -59,6 +59,7 @@ export const useArticleListModel = () => {
     return {
         articles,
         articlesSuspense,
+        isLoading: articleListQuery.isLoading || feedListQuery.isLoading,
         pages,
         currentTag,
         currentType,

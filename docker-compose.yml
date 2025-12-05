@@ -1,7 +1,43 @@
-version: "3"
 services:
+    postgres:
+        image: postgres:16-alpine
+        container_name: real-world-nuxt-db
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER:-postgres}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+            POSTGRES_DB: ${POSTGRES_DB:-realworld}
+        ports:
+            - "${POSTGRES_PORT:-5432}:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - app-network
+
     real-world-nuxt:
         build:
             context: .
+        container_name: real-world-nuxt-app
         ports:
             - "5900:3000"
+        environment:
+            DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-realworld}
+            NODE_ENV: ${NODE_ENV:-production}
+            JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - app-network
+
+volumes:
+    postgres_data:
+        driver: local
+
+networks:
+    app-network:
+        driver: bridge

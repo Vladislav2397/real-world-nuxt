@@ -30,7 +30,10 @@
                         </ul>
                     </div>
 
-                    <template v-if="articles.length > 0">
+                    <template v-if="isLoading">
+                        <div>Loading...</div>
+                    </template>
+                    <template v-else-if="articles.length > 0">
                         <Article
                             v-for="article in articles"
                             :key="article.slug"
@@ -97,6 +100,7 @@ import { useArticleListModel } from '~/views/HomePage/model'
 const {
     articles,
     articlesSuspense,
+    isLoading,
     pages,
     currentPage,
     currentTag,
