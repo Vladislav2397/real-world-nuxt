@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import type { Article, User } from './generated/client'
 import { PrismaClient } from './generated/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { faker } from '@faker-js/faker'
@@ -45,11 +46,21 @@ async function main() {
     await prisma.user.deleteMany()
 
     // Создаем 5 пользователей
-    const users = []
+    const users: User[] = [
+        await prisma.user.create({
+            data: {
+                username: 'jake',
+                email: 'jake@jake.jake',
+                password: await hashPassword('jakejake'),
+                bio: 'I work at statefarm',
+                image: null,
+            },
+        }),
+    ]
     for (let i = 0; i < 5; i++) {
         const password = faker.internet.password({ length: 12 })
         const hashedPassword = await hashPassword(password)
-        
+
         const user = await prisma.user.create({
             data: {
                 username: faker.internet.username(),
@@ -64,7 +75,7 @@ async function main() {
     }
 
     // Создаем статьи для каждого пользователя (3-5 статей)
-    const articles = []
+    const articles: Article[] = []
     const possibleTags = [
         'react',
         'vue',
@@ -79,7 +90,7 @@ async function main() {
     ]
 
     for (const user of users) {
-        const articlesCount = faker.number.int({ min: 3, max: 5 })
+        const articlesCount = faker.number.int({ min: 3, max: 10 })
         for (let i = 0; i < articlesCount; i++) {
             const title = faker.lorem.sentence()
             const slug = await generateUniqueSlug(title)
